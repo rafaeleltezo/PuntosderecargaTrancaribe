@@ -5,11 +5,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.app.master.puntosderecargatrancaribe.Presentador.PresentadorMainActivity;
@@ -39,7 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.ads.AdRequest.LOGTAG;
 
-public class MapsActivity extends FragmentActivity implements iMapsActivity, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,LocationListener {
+public class MapsActivity extends FragmentActivity implements iMapsActivity, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,LocationListener, View.OnClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient apiClient;
@@ -47,7 +49,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     private int PETICION_CONFIG_UBICACION=2;
     private  LocationRequest locRequest;
     private Location location;
-    iPresentadorMainActivity presentador;
+    private iPresentadorMainActivity presentador;
+    private FloatingActionButton boton;
 
 
     @Override
@@ -66,6 +69,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
                 .build();
         enableLocationUpdates();
         presentador.agregarPuntoRecarga();
+        boton=(FloatingActionButton)findViewById(R.id.botonNormal);
+        boton.setOnClickListener(this);
 
     }
 
@@ -282,6 +287,11 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     }
 
 
-
+    @Override
+    public void onClick(View v) {
+        if(v.getId()==boton.getId()){
+            Toast.makeText(this, "Boton", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 
