@@ -124,7 +124,6 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
 
     public void updateUI(Location loc) {
         if (loc != null) {
-
             setLocation(loc);
             Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLatitude()), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLongitude()), Toast.LENGTH_SHORT).show();
