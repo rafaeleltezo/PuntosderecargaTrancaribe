@@ -26,11 +26,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.ads.AdRequest.LOGTAG;
@@ -62,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
                 .build();
         enableLocationUpdates();
         presentador.agregarPuntoRecarga();
+
     }
 
 
@@ -78,6 +83,32 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        CameraPosition cameraPosition;
+        if(location!=null){
+            cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(location.getLatitude(),location.getLongitude()))
+                    .zoom(14)
+                    .bearing(0)
+                    .tilt(0)
+                    .build();
+        }else {
+             cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(10.5627, -74.3156))
+                    .zoom(14)
+                    .bearing(0)
+                    .tilt(0)
+                    .build();
+        }
+        CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        mMap.animateCamera(camara);
+
+        mMap.setMinZoomPreference(11f);
+        mMap.setMaxZoomPreference(18f);
+        presentador.agregarLimitesMapa();
+
+
     }
 
     public Location getLocation() {
@@ -92,6 +123,17 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     @Override
     public void AgregarPuntosRecarga(MarkerOptions marcador){
         mMap.addMarker(marcador);
+    }
+
+    @Override
+    public void establecerLimitesMapa() {
+        LatLngBounds Cartagena = new LatLngBounds(
+                //10.4027901, -75.5156382
+                new LatLng(10.3027, -75.6156), new LatLng(10.5627, -75.3156));
+
+// Constrain the camera target to the Adelaide bounds.
+        mMap.setLatLngBoundsForCameraTarget(Cartagena);
+
     }
 
 
@@ -225,6 +267,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     apiClient, locRequest, MapsActivity.this);
+            mMap.setMyLocationEnabled(true);
+
         }
     }
 

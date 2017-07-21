@@ -6,4 +6,5 @@ package com.app.master.puntosderecargatrancaribe.Presentador;
 
 public interface iPresentadorMainActivity {
     public void agregarPuntoRecarga();
+    public void agregarLimitesMapa();
 }

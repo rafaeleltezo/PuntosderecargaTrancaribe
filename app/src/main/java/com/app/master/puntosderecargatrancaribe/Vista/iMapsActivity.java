@@ -8,5 +8,5 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public interface iMapsActivity {
     public void AgregarPuntosRecarga(MarkerOptions marcador);
-
+    public void establecerLimitesMapa();
 }

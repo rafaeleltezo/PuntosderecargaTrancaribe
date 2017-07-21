@@ -54,4 +54,10 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
             }
         });
     }
+
+    @Override
+    public void agregarLimitesMapa() {
+        activity.establecerLimitesMapa();
+    }
+
 }
