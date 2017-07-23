@@ -1,5 +1,6 @@
 package com.app.master.puntosderecargatrancaribe;
 
+import android.app.ProgressDialog;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -135,6 +136,22 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         linea.color(Color.RED).geodesic(true);
 
         polyline = mMap.addPolyline(linea);
+    }
+
+    @Override
+    public Boolean verificarInternet() {
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+
+            int val = p.waitFor();
+            boolean reachable = (val == 0);
+            return reachable;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public void setLocation(Location location) {
@@ -317,6 +334,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     @Override
     public void onClick(View v) {
         if(v.getId()==boton.getId()){
+
             presentador.obtenerRutaMapa();
         }
     }

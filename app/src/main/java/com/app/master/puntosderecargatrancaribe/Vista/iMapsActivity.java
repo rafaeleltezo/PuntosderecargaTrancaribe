@@ -18,4 +18,5 @@ public interface iMapsActivity {
     public LatLng getLocationMarcador();
     public Location getLocation();
     public void dibujarpolyline(ArrayList<Coordenadas> coordenadas);
+    public Boolean verificarInternet();
 }
