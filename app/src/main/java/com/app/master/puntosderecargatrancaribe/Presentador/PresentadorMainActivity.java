@@ -81,6 +81,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
             final ProgressDialog progreso=new ProgressDialog(context);
             progreso.setTitle("Iniciando ruta");
             progreso.setMessage("Dibujando aproximacion de ruta ");
+            progreso.setCancelable(false);
             progreso.show();
             AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
             Gson gson = conexion.construyeJsonDeserializador();

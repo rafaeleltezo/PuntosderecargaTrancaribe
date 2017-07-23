@@ -1,5 +1,7 @@
 package com.app.master.puntosderecargatrancaribe;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -250,8 +252,6 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
 
             updateUI(lastLocation);
         }
-
-        //android.Manifest.permission.ACCESS_FINE_LOCATION
     }
 
     @Override
