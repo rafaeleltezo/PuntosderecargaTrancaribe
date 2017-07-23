@@ -11,6 +11,6 @@ import retrofit2.http.Query;
 public interface Endpoin {
 
     @GET("/maps/api/directions/json")
-    Call<RespuestaCoordenadas> getUbicacion(@Query("origin") String origin, @Query("destination")
+    public Call<RespuestaCoordenadas> getUbicacion(@Query("origin") String origin, @Query("destination")
             String destination, @Query("key") String key, @Query("mode") String modoViaje);
 }

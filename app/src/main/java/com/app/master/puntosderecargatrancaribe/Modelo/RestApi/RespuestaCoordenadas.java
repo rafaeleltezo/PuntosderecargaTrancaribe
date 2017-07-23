@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Rafael p on 20/7/2017.
  */
 
-class RespuestaCoordenadas {
+public class RespuestaCoordenadas {
     ArrayList<Coordenadas> coordenadas;
 
     public ArrayList<Coordenadas> getCoordenadas() {

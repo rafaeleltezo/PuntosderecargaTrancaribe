@@ -3,9 +3,12 @@ package com.app.master.puntosderecargatrancaribe.Presentador;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.AdaptadorEnpointGoogle;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
+import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Endpoin;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.FirebaseReferences;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Paradero;
+import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RespuestaCoordenadas;
 import com.app.master.puntosderecargatrancaribe.Vista.iMapsActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -14,8 +17,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rafael p on 20/7/2017.
@@ -27,10 +35,12 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
     private Context context;
     private ArrayList<Coordenadas> coordenadasMapa;
     private iMapsActivity activity;
+    private final String token ="AIzaSyDjjRBHOHlbzcFrVl_xQAK07u0EZyr19YQ";
 
     public PresentadorMainActivity(Context context, iMapsActivity activity){
         this.context=context;
         this.activity=activity;
+        agregarPuntoRecarga();
     }
 
     public void agregarPuntoRecarga(){
@@ -42,9 +52,8 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
 
                 for (DataSnapshot dato:dataSnapshot.getChildren()){
                     Paradero paradero=dato.getValue(Paradero.class);
-                    MarkerOptions marker=new MarkerOptions();
-                    marker.position(new LatLng(paradero.getLatitud(),paradero.getLatitud()));
-                    activity.AgregarPuntosRecarga(marker);
+                    activity.AgregarPuntosRecarga(paradero.getLatitud(),paradero.getLongitud(),paradero.getNombre());
+
                 }
             }
 
@@ -58,6 +67,30 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
     @Override
     public void agregarLimitesMapa() {
         activity.establecerLimitesMapa();
+    }
+
+    @Override
+    public void obtenerRutaMapa() {
+        AdaptadorEnpointGoogle conexion=new AdaptadorEnpointGoogle();
+        Gson gson =conexion.construyeJsonDeserializador();
+        Endpoin endpoint=conexion.establecerConexionGoogleMaps(gson);
+        Call<RespuestaCoordenadas> respuesta=endpoint.getUbicacion(String.valueOf(activity.getLocation().getLatitude())+","+String.valueOf(activity.getLocation().getLongitude()),
+                String.valueOf(activity.getLocationMarcador().latitude)+","+String.valueOf(activity.getLocationMarcador().longitude),
+                token,"walking");
+        respuesta.enqueue(new Callback<RespuestaCoordenadas>() {
+            @Override
+            public void onResponse(Call<RespuestaCoordenadas> call, Response<RespuestaCoordenadas> response) {
+                coordenadasMapa=response.body().getCoordenadas();
+                Toast.makeText(context, "Dibujando ruta aproximada", Toast.LENGTH_SHORT).show();
+                activity.dibujarpolyline(coordenadasMapa);
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaCoordenadas> call, Throwable t) {
+                Toast.makeText(context, "Error al conectar con el servidor "+ t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 }
