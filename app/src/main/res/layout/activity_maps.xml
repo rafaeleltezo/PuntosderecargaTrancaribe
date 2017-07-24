@@ -1,32 +1,48 @@
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-<fragment
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="com.app.master.puntosderecargatrancaribe.MapsActivity"
-    >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:orientation="vertical"
-        android:layout_marginBottom="@dimen/botonFlotante">
-
-
-    <android.support.design.widget.FloatingActionButton
+    <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/botonNormal"
-        android:elevation="@dimen/botonFlotante"
-        android:layout_gravity="right"
-        />
-    </LinearLayout>
-</fragment>
-</android.support.v7.widget.CardView>
+        android:layout_height="wrap_content">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:context="com.app.master.puntosderecargatrancaribe.MapsActivity"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/botonFlotante">
+
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/botonNormal"
+                    android:src="@drawable/polyline"
+                    android:elevation="@dimen/botonFlotante"
+                    android:layout_gravity="right"
+                    />
+                    <com.google.android.gms.ads.AdView
+                        android:id="@+id/adView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        ads:adSize="BANNER"
+                        ads:adUnitId="@string/baner">
+                    </com.google.android.gms.ads.AdView>
+                </LinearLayout>
+            </fragment>
+    </FrameLayout>
+</LinearLayout>

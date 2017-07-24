@@ -22,6 +22,8 @@ import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
 import com.app.master.puntosderecargatrancaribe.Presentador.PresentadorMainActivity;
 import com.app.master.puntosderecargatrancaribe.Presentador.iPresentadorMainActivity;
 import com.app.master.puntosderecargatrancaribe.Vista.iMapsActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -64,7 +66,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     private iPresentadorMainActivity presentador;
     private FloatingActionButton boton;
     private Polyline polyline;
-
+    private AdView adView;
+    private AdRequest adRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,10 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         boton.setOnClickListener(this);
         boton.setVisibility(View.INVISIBLE);
         presentador.agregarPuntoRecarga();
+        //Agregarndo Publicidad
+        adView = (AdView) findViewById(R.id.adView);
+        adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
     }
 
