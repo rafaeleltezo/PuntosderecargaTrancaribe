@@ -170,8 +170,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     }
 
     @Override
-    public void AgregarPuntosRecarga(double latitud,double longitud,String nombre){
-        Marker marcador=mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title(nombre));
+    public void AgregarPuntosRecarga(double latitud,double longitud,String nombre,String descripcion){
+        Marker marcador=mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title(nombre).snippet(descripcion));
         marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.punto_recarga));
 
     }
@@ -342,6 +342,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     @Override
     public boolean onMarkerClick(Marker marker) {
         setLocationMarcador(marker.getPosition());
+        marker.showInfoWindow();
         boton.setVisibility(View.VISIBLE);
         return true;
     }

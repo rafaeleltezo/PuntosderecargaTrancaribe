@@ -55,8 +55,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity{
 
                     for (DataSnapshot dato : dataSnapshot.getChildren()) {
                         Paradero paradero = dato.getValue(Paradero.class);
-                        activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre());
-
+                        activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre(),paradero.getDescripcion());
                     }
                 }
 

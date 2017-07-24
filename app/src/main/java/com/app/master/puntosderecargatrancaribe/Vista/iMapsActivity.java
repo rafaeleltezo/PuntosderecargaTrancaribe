@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 
 public interface iMapsActivity {
-    public void AgregarPuntosRecarga(double latitud,double longitud,String nombre);
+    public void AgregarPuntosRecarga(double latitud,double longitud,String nombre,String descripcion);
     public void establecerLimitesMapa();
     public LatLng getLocationMarcador();
     public Location getLocation();
