@@ -17,6 +17,7 @@
                 android:layout_height="wrap_content"
                 tools:context="com.app.master.puntosderecargatrancaribe.MapsActivity"
                 >
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -24,6 +25,14 @@
                     android:orientation="vertical"
                     android:layout_marginBottom="@dimen/botonFlotante">
 
+                <android.support.design.widget.FloatingActionButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/botonLimpiar"
+                        android:src="@drawable/limpiar_polylinea"
+                        android:elevation="@dimen/botonFlotante"
+                        android:layout_gravity="center|right"
+                        />
 
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"

@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
@@ -54,17 +55,17 @@ import java.util.ArrayList;
 
 import static com.google.ads.AdRequest.LOGTAG;
 
-public class MapsActivity extends FragmentActivity implements iMapsActivity, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,LocationListener, View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements iMapsActivity, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient apiClient;
-    private int PETICION_PERMISO_LOCALIZACION=1;
-    private int PETICION_CONFIG_UBICACION=2;
-    private  LocationRequest locRequest;
+    private int PETICION_PERMISO_LOCALIZACION = 1;
+    private int PETICION_CONFIG_UBICACION = 2;
+    private LocationRequest locRequest;
     private LatLng locationMarcador;
     private Location location;
     private iPresentadorMainActivity presentador;
-    private FloatingActionButton boton;
+    private FloatingActionButton boton,botonLimpiar;
     private Polyline polyline;
     private AdView adView;
     private AdRequest adRequest;
@@ -77,15 +78,18 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        presentador=new PresentadorMainActivity(this,this);
-        apiClient=new GoogleApiClient.Builder(this)
+        presentador = new PresentadorMainActivity(this, this);
+        apiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .build();
         enableLocationUpdates();
 
-        boton=(FloatingActionButton)findViewById(R.id.botonNormal);
+        boton = (FloatingActionButton) findViewById(R.id.botonNormal);
+        botonLimpiar=(FloatingActionButton) findViewById(R.id.botonLimpiar);
+        botonLimpiar.setVisibility(View.INVISIBLE);
+        botonLimpiar.setOnClickListener(this);
         boton.setOnClickListener(this);
         boton.setVisibility(View.INVISIBLE);
         presentador.agregarPuntoRecarga();
@@ -113,12 +117,12 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         CameraPosition cameraPosition;
-             cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(10.4027901, -75.5146382))
-                    .zoom(14)
-                    .bearing(0)
-                    .tilt(0)
-                    .build();
+        cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(10.4027901, -75.5146382))
+                .zoom(14)
+                .bearing(0)
+                .tilt(0)
+                .build();
 
         CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
         mMap.animateCamera(camara);
@@ -139,12 +143,14 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     public void dibujarpolyline(ArrayList<Coordenadas> coordenadas) {
 
         PolylineOptions linea = new PolylineOptions();
-        for (Coordenadas puntoCoordenadas:coordenadas) {
-            linea.add(new LatLng(puntoCoordenadas.getLatitud(),puntoCoordenadas.getLongitud()));
+        for (Coordenadas puntoCoordenadas : coordenadas) {
+            linea.add(new LatLng(puntoCoordenadas.getLatitud(), puntoCoordenadas.getLongitud()));
         }
         linea.color(Color.RED).geodesic(true);
-
+        String distancia = "Distancia: " + String.valueOf(coordenadas.get(1).getDistancia()) + " m";
+        Toast.makeText(this, distancia, Toast.LENGTH_LONG).show();
         polyline = mMap.addPolyline(linea);
+        botonLimpiar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -177,8 +183,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     }
 
     @Override
-    public void AgregarPuntosRecarga(double latitud,double longitud,String nombre,String descripcion){
-        Marker marcador=mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title(nombre).snippet(descripcion));
+    public void AgregarPuntosRecarga(double latitud, double longitud, String nombre, String descripcion) {
+        Marker marcador = mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title(nombre).snippet(descripcion));
         marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.punto_recarga));
 
     }
@@ -208,6 +214,17 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
                         LocationServices.FusedLocationApi.getLastLocation(apiClient);
 
                 updateUI(lastLocation);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
 
             } else {
                 //Permiso denegado:
@@ -289,7 +306,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
 
-                        Toast.makeText(MapsActivity.this, "Configuracion correcta", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MapsActivity.this, "Configuracion correcta", Toast.LENGTH_SHORT).show();
                         startLocationUpdates();
                         break;
 
@@ -319,7 +336,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
 
             //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
             //Sería recomendable implementar la posible petición en caso de no tenerlo.
-            Toast.makeText(this, "Inicio de recepción de ubicaciones", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Inicio de recepción de ubicaciones", Toast.LENGTH_SHORT).show();
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     apiClient, locRequest, MapsActivity.this);
@@ -341,8 +358,13 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     @Override
     public void onClick(View v) {
         if(v.getId()==boton.getId()){
-
             presentador.obtenerRutaMapa();
+        }
+        if(v.getId()==botonLimpiar.getId()){
+            mMap.clear();
+            presentador.agregarPuntoRecarga();
+            Toast.makeText(this, "Eliminanda", Toast.LENGTH_SHORT).show();
+            botonLimpiar.setVisibility(View.INVISIBLE);
         }
     }
 
