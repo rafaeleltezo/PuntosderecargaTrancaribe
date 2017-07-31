@@ -58,6 +58,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     private int PETICION_PERMISO_LOCALIZACION = 1;
     private int PETICION_CONFIG_UBICACION = 2;
     private LocationRequest locRequest;
+    private Location lastLocation;
     private LatLng locationMarcador;
     private Location location;
     private iPresentadorMainActivity presentador;
@@ -118,13 +119,12 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         CameraPosition cameraPosition;
-        cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(10.4027901, -75.5146382))
-                .zoom(14)
-                .bearing(0)
-                .tilt(0)
-                .build();
-
+            cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(10.4027901, -75.5146382))
+                    .zoom(14)
+                    .bearing(0)
+                    .tilt(0)
+                    .build();
         CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
         mMap.animateCamera(camara);
 
@@ -278,9 +278,16 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
                     PETICION_PERMISO_LOCALIZACION);
         } else {
 
-            Location lastLocation =
-                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
-
+           lastLocation =LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            CameraPosition cameraPosition;
+            cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                    .zoom(14)
+                    .bearing(0)
+                    .tilt(0)
+                    .build();
+            CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mMap.animateCamera(camara);
             updateUI(lastLocation);
         }
     }

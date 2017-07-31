@@ -275,53 +275,56 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
         @Override
         protected void onPreExecute() {
-            progreso.setTitle("Iniciando ruta");
-            progreso.setMessage("Buscanco ruta cercana ");
-            progreso.setCancelable(false);
-            progreso.show();
+
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            try {
+                for (final Paradero paradero : coordenadas) {
 
-            for (final Paradero paradero : coordenadas) {
-
-                final AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
-                Gson gson = conexion.costruyeJsonDeserializadorDistanciaCorta();
-                Endpoin endpoin = conexion.establecerConexionGoogleMaps(gson);
-                rutas = new ArrayList();
-                Call<RespuestaRutaCorta> respuesta = endpoin.getubicacionCorta(String.valueOf(activity.getLocation().getLatitude()) + "," + String.valueOf(activity.getLocation().getLongitude()),
-                        String.valueOf(paradero.getLatitud()) + "," + String.valueOf(paradero.getLongitud()), token, "walking");
-                respuesta.enqueue(new Callback<RespuestaRutaCorta>() {
-                    @Override
-                    public void onResponse(Call<RespuestaRutaCorta> call, Response<RespuestaRutaCorta> response) {
-                        RespuestaRutaCorta respuesta = response.body();
-                        RutaCorta ruta = new RutaCorta();
-                        ruta.setDistacia(respuesta.getDistancia());
-                        ruta.setParadero(paradero);
-                        rutas.add(ruta);
-                        double distacia=rutas.get(0).getDistacia();
-                        if(ruta.getDistacia()<distacia){
-                            distacia=ruta.getDistacia();
-                            rutaCortaRecarga=ruta;
-                            Toast.makeText(context, rutaCortaRecarga.getParadero().getNombre(), Toast.LENGTH_SHORT).show();
-                            obtenerRutaMapa(rutaCortaRecarga.getParadero());
+                    final AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
+                    Gson gson = conexion.costruyeJsonDeserializadorDistanciaCorta();
+                    Endpoin endpoin = conexion.establecerConexionGoogleMaps(gson);
+                    rutas = new ArrayList();
+                    Call<RespuestaRutaCorta> respuesta = endpoin.getubicacionCorta(String.valueOf(activity.getLocation().getLatitude()) + "," + String.valueOf(activity.getLocation().getLongitude()),
+                            String.valueOf(paradero.getLatitud()) + "," + String.valueOf(paradero.getLongitud()), token, "walking");
+                    respuesta.enqueue(new Callback<RespuestaRutaCorta>() {
+                        @Override
+                        public void onResponse(Call<RespuestaRutaCorta> call, Response<RespuestaRutaCorta> response) {
+                            RespuestaRutaCorta respuesta = response.body();
+                            RutaCorta ruta = new RutaCorta();
+                            ruta.setDistacia(respuesta.getDistancia());
+                            ruta.setParadero(paradero);
+                            rutas.add(ruta);
+                            double distacia = rutas.get(0).getDistacia();
+                            if (ruta.getDistacia() < distacia) {
+                                distacia = ruta.getDistacia();
+                                rutaCortaRecarga = ruta;
+                                obtenerRutaMapa(rutaCortaRecarga.getParadero());
+                                publishProgress();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<RespuestaRutaCorta> call, Throwable t) {
-                        Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<RespuestaRutaCorta> call, Throwable t) {
+                            Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
 
+                }
+            }catch (Exception e){
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             return null;
         }
 
-
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
 
         @Override
         protected void onPostExecute(Void aVoid) {

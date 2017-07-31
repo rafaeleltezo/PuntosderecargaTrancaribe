@@ -23,13 +23,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|left"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/botonFlotante"
-                    >
+                    android:layout_marginBottom="@dimen/botonFlotante">
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/marginBotonRuta"
                         android:id="@+id/rutaCercana"
-                        android:text="ruta cercana"/>
+                        android:text="@string/botonRuta"/>
 
                 </LinearLayout>
 
