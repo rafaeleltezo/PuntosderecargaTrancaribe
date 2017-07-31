@@ -3,6 +3,7 @@ package com.app.master.puntosderecargatrancaribe.Vista;
 import android.location.Location;
 
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -19,4 +20,5 @@ public interface iMapsActivity {
     public Location getLocation();
     public void dibujarpolyline(ArrayList<Coordenadas> coordenadas);
     public Boolean verificarInternet();
+    public void moverCamaraMapa(CameraPosition cameraPosition);
 }

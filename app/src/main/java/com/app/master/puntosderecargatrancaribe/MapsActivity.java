@@ -100,6 +100,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     }
 
 
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -109,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -166,6 +168,12 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         }
 
         return false;
+    }
+
+    @Override
+    public void moverCamaraMapa(CameraPosition cameraPosition) {
+        CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        mMap.animateCamera(camara);
     }
 
     public void setLocation(Location location) {

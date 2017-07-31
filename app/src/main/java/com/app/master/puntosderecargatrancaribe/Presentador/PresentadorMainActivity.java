@@ -16,6 +16,7 @@ import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RespuestaCoordena
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RespuestaRutaCorta;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RutaCorta;
 import com.app.master.puntosderecargatrancaribe.Vista.iMapsActivity;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -44,12 +45,14 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
     private ArrayList<Paradero> coordenadasParaderos;
     private ArrayList<RutaCorta> rutacorta;
     private iMapsActivity activity;
+    private TareaAsincronaMejorRuta tarea;
     private final String token = "AIzaSyDjjRBHOHlbzcFrVl_xQAK07u0EZyr19YQ";
 
     public PresentadorMainActivity(Context context, iMapsActivity activity) {
         this.context = context;
         this.activity = activity;
         agregarPuntoRecarga();
+
     }
 
     public void agregarPuntoRecarga() {
@@ -65,6 +68,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                         Paradero paradero = dato.getValue(Paradero.class);
                         activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre(), paradero.getDescripcion());
                         coordenadasParaderos.add(paradero);
+
                     }
                 }
 
@@ -137,6 +141,13 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 public void onResponse(Call<RespuestaCoordenadas> call, Response<RespuestaCoordenadas> response) {
                     coordenadasMapa = response.body().getCoordenadas();
                     activity.dibujarpolyline(coordenadasMapa);
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(coordenadasMapa.get(1).getLatitud(),coordenadasMapa.get(1).getLongitud()))
+                            .zoom(17)
+                            .bearing(0)
+                            .tilt(0)
+                            .build();
+                    activity.moverCamaraMapa(cameraPosition);
                     progreso.dismiss();
 
                 }
@@ -154,7 +165,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
     }
 
     @Override
-    public void obtenerutaCercana(final Paradero paradero) {
+    public void obtenerutaCercana() {
        /* if (activity.verificarInternet()) {
             AdaptadorEnpointGoogle conexion= new AdaptadorEnpointGoogle();
             Gson gson=conexion.costruyeJsonDeserializadorDistanciaCorta();
@@ -179,10 +190,31 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
             });
 
         }*/
+        if (activity.verificarInternet()) {
+            DecimalFormat df = new DecimalFormat("#.00");
+            String latitulMiPosicion = df.format(activity.getLocation().getLatitude());
+            String longitudlMiPosicion = df.format(activity.getLocation().getLongitude());
+            ArrayList<Paradero> coordenadasPuntoRecarga = new ArrayList();
+            for (Paradero paraderos : coordenadasParaderos) {
+                df = new DecimalFormat("#.00");
+                String latitudRecarga = df.format(paraderos.getLatitud());
+                String longitudRecarga = df.format(paraderos.getLongitud());
+                if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
+                    coordenadasPuntoRecarga.add(paraderos);
+                }
+
+            }
+            tarea = new TareaAsincronaMejorRuta(coordenadasPuntoRecarga);
+            tarea.execute();
+
+        } else {
+            Toast.makeText(context, "No esta conectado a internet", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void dibujarRutaCortaMapa() {
+        obtenerutaCercana();
         /*
         final ProgressDialog progreso=new ProgressDialog(context);
         progreso.setTitle("Iniciando ruta");
@@ -200,10 +232,9 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 Toast.makeText(context, String.valueOf(distancia), Toast.LENGTH_SHORT).show();
             }
 
-        }*/
+        }
 
         if (activity.verificarInternet()) {
-            ArrayList<Paradero> puntorecarga;
             DecimalFormat df = new DecimalFormat("#.00");
             String latitulMiPosicion = df.format(activity.getLocation().getLatitude());
             String longitudlMiPosicion = df.format(activity.getLocation().getLongitude());
@@ -221,24 +252,31 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
             tarea.execute();
 
         } else {
-            Toast.makeText(context, "No hay internet", Toast.LENGTH_SHORT).show();
-        }
+            Toast.makeText(context, "No esta conectado a internet", Toast.LENGTH_LONG).show();
+        }*/
+
 
     }
 
     private class TareaAsincronaMejorRuta extends AsyncTask<Void, Void, Void> {
         private ArrayList<Paradero> coordenadas;
-        private ArrayList<RutaCorta> rutas;
+        private  ArrayList<RutaCorta> rutas;
         final ProgressDialog progreso = new ProgressDialog(context);
+        private RutaCorta rutaCortaRecarga;;
 
         TareaAsincronaMejorRuta(ArrayList<Paradero> coordenadasParaderos) {
             this.coordenadas = coordenadasParaderos;
         }
 
+        public ArrayList<RutaCorta> getRutas() {
+            return rutas;
+        }
+
+
         @Override
         protected void onPreExecute() {
             progreso.setTitle("Iniciando ruta");
-            progreso.setMessage("Dibujando aproximacion de ruta mas cercana ");
+            progreso.setMessage("Buscanco ruta cercana ");
             progreso.setCancelable(false);
             progreso.show();
         }
@@ -248,7 +286,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
             for (final Paradero paradero : coordenadas) {
 
-                AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
+                final AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
                 Gson gson = conexion.costruyeJsonDeserializadorDistanciaCorta();
                 Endpoin endpoin = conexion.establecerConexionGoogleMaps(gson);
                 rutas = new ArrayList();
@@ -262,7 +300,13 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                         ruta.setDistacia(respuesta.getDistancia());
                         ruta.setParadero(paradero);
                         rutas.add(ruta);
-                        Toast.makeText(context,rutas.get(0).getParadero().getNombre(), Toast.LENGTH_SHORT).show();
+                        double distacia=rutas.get(0).getDistacia();
+                        if(ruta.getDistacia()<distacia){
+                            distacia=ruta.getDistacia();
+                            rutaCortaRecarga=ruta;
+                            Toast.makeText(context, rutaCortaRecarga.getParadero().getNombre(), Toast.LENGTH_SHORT).show();
+                            obtenerRutaMapa(rutaCortaRecarga.getParadero());
+                        }
                     }
 
                     @Override
@@ -273,27 +317,16 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
 
             }
+
             return null;
         }
 
+
+
         @Override
         protected void onPostExecute(Void aVoid) {
-           // Toast.makeText(context, "entre"+rutas.get(1).getParadero().getNombre(), Toast.LENGTH_SHORT).show();
+
             progreso.dismiss();
-             /*
-            Paradero paradero = null;
-
-            for (RutaCorta ruta : rutas) {
-                Toast.makeText(context, ruta.getParadero().getNombre(), Toast.LENGTH_SHORT).show();
-                double distancia=ruta.getDistacia();
-                if (ruta.getDistacia() < distancia) {
-                    distancia = ruta.getDistacia();
-                    paradero = ruta.getParadero();
-                    obtenerRutaMapa(paradero);
-                }
-            }
-            progreso.dismiss();*/
         }
-
     }
 }
