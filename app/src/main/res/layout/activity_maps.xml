@@ -21,6 +21,22 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="top|left"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/botonFlotante"
+                    >
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rutaCercana"
+                        android:text="ruta cercana"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom|right"
                     android:orientation="vertical"
                     android:layout_marginBottom="@dimen/botonFlotante">
@@ -32,6 +48,7 @@
                         android:src="@drawable/limpiar_polylinea"
                         android:elevation="@dimen/botonFlotante"
                         android:layout_gravity="center|right"
+
                         />
 
                 <android.support.design.widget.FloatingActionButton

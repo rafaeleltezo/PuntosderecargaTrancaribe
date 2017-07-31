@@ -1,8 +1,6 @@
 package com.app.master.puntosderecargatrancaribe;
 
-import android.*;
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,13 +8,12 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
@@ -41,7 +38,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     private Location location;
     private iPresentadorMainActivity presentador;
     private FloatingActionButton boton,botonLimpiar;
+    private Button rutaCercana;
     private Polyline polyline;
     private AdView adView;
     private AdRequest adRequest;
@@ -87,10 +84,12 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         enableLocationUpdates();
 
         boton = (FloatingActionButton) findViewById(R.id.botonNormal);
+        rutaCercana=(Button)findViewById(R.id.rutaCercana);
         botonLimpiar=(FloatingActionButton) findViewById(R.id.botonLimpiar);
         botonLimpiar.setVisibility(View.INVISIBLE);
         botonLimpiar.setOnClickListener(this);
         boton.setOnClickListener(this);
+        rutaCercana.setOnClickListener(this);
         boton.setVisibility(View.INVISIBLE);
         presentador.agregarPuntoRecarga();
         //Agregarndo Publicidad
@@ -242,8 +241,8 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     public void updateUI(Location loc) {
         if (loc != null) {
             setLocation(loc);
-            //Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLatitude()), Toast.LENGTH_SHORT).show();
-            //Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLongitude()), Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLatitude()), Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLongitude()), Toast.LENGTH_SHORT).show();
             LatLng posicion = new LatLng(loc.getLatitude(), loc.getLongitude());
 
 
@@ -366,6 +365,10 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
             Toast.makeText(this, "Eliminanda", Toast.LENGTH_SHORT).show();
             botonLimpiar.setVisibility(View.INVISIBLE);
         }
+        if(v.getId()==rutaCercana.getId()){
+            presentador.dibujarRutaCortaMapa();
+
+        }
     }
 
     @Override
@@ -379,6 +382,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     @Override
     public void onMapClick(LatLng latLng) {
         boton.setVisibility(View.INVISIBLE);
+
     }
 }
 

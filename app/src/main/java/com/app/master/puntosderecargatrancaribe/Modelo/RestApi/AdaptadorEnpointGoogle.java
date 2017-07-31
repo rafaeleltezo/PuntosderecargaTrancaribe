@@ -25,4 +25,10 @@ public class AdaptadorEnpointGoogle {
         gsonBuilder.registerTypeAdapter(RespuestaCoordenadas.class,new CoordenadasDeserializador());
         return gsonBuilder.create();
     }
+
+    public Gson costruyeJsonDeserializadorDistanciaCorta(){
+        GsonBuilder gsonBuilder=new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(RespuestaRutaCorta.class,new DistaciaDeserializador());
+        return gsonBuilder.create();
+    }
 }
