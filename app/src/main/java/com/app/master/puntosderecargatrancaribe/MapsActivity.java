@@ -148,8 +148,6 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
             linea.add(new LatLng(puntoCoordenadas.getLatitud(), puntoCoordenadas.getLongitud()));
         }
         linea.color(Color.RED).geodesic(true);
-        String distancia = "Distancia: " + String.valueOf(coordenadas.get(1).getDistancia()) + " m";
-        Toast.makeText(this, distancia, Toast.LENGTH_LONG).show();
         polyline = mMap.addPolyline(linea);
         botonLimpiar.setVisibility(View.VISIBLE);
     }
@@ -279,15 +277,19 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
         } else {
 
            lastLocation =LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            CameraPosition cameraPosition;
-            cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                    .zoom(14)
-                    .bearing(0)
-                    .tilt(0)
-                    .build();
-            CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
-            mMap.animateCamera(camara);
+            try {
+                CameraPosition cameraPosition;
+                cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                        .zoom(14)
+                        .bearing(0)
+                        .tilt(0)
+                        .build();
+                CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                mMap.animateCamera(camara);
+            }catch (Exception e){
+                Log.d("Error de latitud","Null point");
+            }
             updateUI(lastLocation);
         }
     }

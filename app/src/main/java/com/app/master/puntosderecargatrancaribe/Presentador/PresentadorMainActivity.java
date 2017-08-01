@@ -41,16 +41,18 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
     private FirebaseDatabase database;
     private Context context;
+    private ProgressDialog progreso;
     private ArrayList<Coordenadas> coordenadasMapa;
     private ArrayList<Paradero> coordenadasParaderos;
     private ArrayList<RutaCorta> rutacorta;
     private iMapsActivity activity;
-    private TareaAsincronaMejorRuta tarea;
+
     private final String token = "AIzaSyDjjRBHOHlbzcFrVl_xQAK07u0EZyr19YQ";
 
     public PresentadorMainActivity(Context context, iMapsActivity activity) {
         this.context = context;
         this.activity = activity;
+        progreso=new ProgressDialog(context);
         agregarPuntoRecarga();
 
     }
@@ -125,11 +127,6 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
     @Override
     public void obtenerRutaMapa(Paradero paradero) {
         if (activity.verificarInternet()) {
-            final ProgressDialog progreso = new ProgressDialog(context);
-            progreso.setTitle("Iniciando ruta");
-            progreso.setMessage("Dibujando aproximacion de ruta ");
-            progreso.setCancelable(false);
-            progreso.show();
             AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
             Gson gson = conexion.construyeJsonDeserializador();
             Endpoin endpoint = conexion.establecerConexionGoogleMaps(gson);
@@ -191,6 +188,10 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
         }*/
         if (activity.verificarInternet()) {
+            progreso.setTitle("Iniciando ruta");
+            progreso.setMessage("Dibujando aproximacion de ruta ");
+            progreso.setCancelable(false);
+            progreso.show();
             DecimalFormat df = new DecimalFormat("#.00");
             String latitulMiPosicion = df.format(activity.getLocation().getLatitude());
             String longitudlMiPosicion = df.format(activity.getLocation().getLongitude());
@@ -201,11 +202,11 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 String longitudRecarga = df.format(paraderos.getLongitud());
                 if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
                     coordenadasPuntoRecarga.add(paraderos);
+                    TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(coordenadasPuntoRecarga);
+                    tarea.execute();
                 }
 
             }
-            tarea = new TareaAsincronaMejorRuta(coordenadasPuntoRecarga);
-            tarea.execute();
 
         } else {
             Toast.makeText(context, "No esta conectado a internet", Toast.LENGTH_LONG).show();
@@ -214,6 +215,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
     @Override
     public void dibujarRutaCortaMapa() {
+
         obtenerutaCercana();
         /*
         final ProgressDialog progreso=new ProgressDialog(context);
@@ -302,7 +304,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                                 distacia = ruta.getDistacia();
                                 rutaCortaRecarga = ruta;
                                 obtenerRutaMapa(rutaCortaRecarga.getParadero());
-                                publishProgress();
+
                             }
                         }
 
@@ -321,15 +323,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
             return null;
         }
 
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
 
-            progreso.dismiss();
-        }
     }
 }
