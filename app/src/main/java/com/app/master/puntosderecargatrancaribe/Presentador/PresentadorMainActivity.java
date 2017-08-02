@@ -52,8 +52,8 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
     public PresentadorMainActivity(Context context, iMapsActivity activity) {
         this.context = context;
         this.activity = activity;
-        progreso=new ProgressDialog(context);
         agregarPuntoRecarga();
+        progreso=new ProgressDialog(context);
 
     }
 

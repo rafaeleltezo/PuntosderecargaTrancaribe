@@ -2,4 +2,6 @@
 <resources>
     <dimen name="botonFlotante">12dp</dimen>
     <dimen name="marginBotonRuta">10dp</dimen>
+    <dimen name="elevacion_appbar">12dp</dimen>
+    <dimen name="linerLayoutmargen">60dp</dimen>
 </resources>

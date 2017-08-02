@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:map="http://schemas.android.com/apk/res-auto"
+xmlns:ads="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical">
+
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|left"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/botonFlotante">
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/marginBotonRuta"
+                        android:id="@+id/rutaCercanaFragment"
+                        android:text="@string/botonRuta"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/linerLayoutmargen">
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/botonLimpiarFragment"
+                        android:src="@drawable/limpiar_polylinea"
+                        android:elevation="@dimen/botonFlotante"
+                        android:layout_gravity="center|right"
+
+                        />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/botonNormalFragment"
+                        android:src="@drawable/polyline"
+                        android:elevation="@dimen/botonFlotante"
+                        android:layout_gravity="right"
+                        />
+                    <com.google.android.gms.ads.AdView
+                        android:id="@+id/adViewFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        ads:adSize="BANNER"
+                        ads:adUnitId="@string/baner">
+                    </com.google.android.gms.ads.AdView>
+                </LinearLayout>
+            </FrameLayout>
+</LinearLayout>
