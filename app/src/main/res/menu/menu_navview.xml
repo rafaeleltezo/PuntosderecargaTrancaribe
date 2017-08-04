@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_seccion_1"
+            android:icon="@drawable/limpiar_polylinea"
+            android:title="seccion_1"/>
+        <item
+            android:id="@+id/menu_seccion_2"
+            android:icon="@drawable/limpiar_polylinea"
+            android:title="seccion_2"/>
+    </group>
+
+</menu>

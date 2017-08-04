@@ -1,10 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clickable="true"
+    tools:context="com.app.master.puntosderecargatrancaribe.Vista.Principal"
+    tools:showIn="@layout/layoutmenuprincipal">
+
+    <!-- Toolbar -->
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/appbar"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <!-- Resto de la interfaz de usuario -->
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
+
+<!--
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.app.master.puntosderecargatrancaribe.Vista.Principal">
+    tools:context="com.app.master.puntosderecargatrancaribe.Vista.Principal"
+    >
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
@@ -12,12 +43,5 @@
         android:id="@+id/viewpager">
     </android.support.v4.view.ViewPager>
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/botonNavegancion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/colorPrimary"
-        app:menu="@menu/menu_boton_bar"
-        />
 </RelativeLayout>
+-->

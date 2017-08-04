@@ -89,14 +89,28 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presentador = new PresentadorMainActivity(getActivity(), this);
-        apiClient = new GoogleApiClient.Builder(getContext())
-                .enableAutoManage(getActivity(), this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
-        enableLocationUpdates();
+        if(apiClient == null || !apiClient.isConnected()){
+            try {
+                apiClient = new GoogleApiClient.Builder(getContext())
+                        .enableAutoManage(getActivity(), this)
+                        .addConnectionCallbacks(this)
+                        .addApi(LocationServices.API)
+                        .build();
 
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            enableLocationUpdates();
+        }
+
+
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        apiClient.stopAutoManage(getActivity());
+        apiClient.disconnect();
     }
 
     @Nullable

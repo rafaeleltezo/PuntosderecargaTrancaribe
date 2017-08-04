@@ -152,12 +152,14 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 @Override
                 public void onFailure(Call<RespuestaCoordenadas> call, Throwable t) {
                     Toast.makeText(context, "Error al conectar con el servidor " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    progreso.dismiss();
 
                 }
             });
 
         } else {
             Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
+            progreso.dismiss();
         }
     }
 
@@ -210,6 +212,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
         } else {
             Toast.makeText(context, "No esta conectado a internet", Toast.LENGTH_LONG).show();
+
         }
     }
 
@@ -311,13 +314,15 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                         @Override
                         public void onFailure(Call<RespuestaRutaCorta> call, Throwable t) {
                             Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
+                            progreso.dismiss();
                         }
                     });
 
 
                 }
-            }catch (Exception e){
-                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }catch (Exception e) {
+                progreso.dismiss();
+            //Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             return null;
