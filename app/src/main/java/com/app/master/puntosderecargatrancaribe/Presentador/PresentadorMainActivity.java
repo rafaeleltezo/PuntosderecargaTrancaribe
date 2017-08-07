@@ -192,7 +192,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
         if (activity.verificarInternet()) {
             progreso.setTitle("Iniciando ruta");
             progreso.setMessage("Dibujando aproximacion de ruta ");
-            progreso.setCancelable(false);
+            progreso.setCancelable(true);
             progreso.show();
             DecimalFormat df = new DecimalFormat("#.00");
             String latitulMiPosicion = df.format(activity.getLocation().getLatitude());

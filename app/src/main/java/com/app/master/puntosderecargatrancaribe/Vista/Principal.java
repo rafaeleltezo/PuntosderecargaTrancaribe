@@ -1,8 +1,6 @@
 package com.app.master.puntosderecargatrancaribe.Vista;
 
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -11,9 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.app.master.puntosderecargatrancaribe.Presentador.PresentadorPrincipal;
 import com.app.master.puntosderecargatrancaribe.Presentador.iPresentadorPrincipal;
 import com.app.master.puntosderecargatrancaribe.R;
 import com.app.master.puntosderecargatrancaribe.Vista.Adaptadores.AdaptadorViewPagerPrincipal;
@@ -52,7 +48,7 @@ public class Principal extends AppCompatActivity implements iPrincipal{
                                 fragmentTransaction = true;
                                 break;
                             case R.id.menu_seccion_2:
-                                fragment=new Rutas();
+                                fragment=new FragmentoRutas();
                                 fragmentTransaction = true;
                                 break;
                         }

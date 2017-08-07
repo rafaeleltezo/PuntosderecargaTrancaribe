@@ -4,11 +4,11 @@
         <item
             android:id="@+id/menu_seccion_1"
             android:icon="@drawable/limpiar_polylinea"
-            android:title="seccion_1"/>
+            android:title="RutaTranscaribe"/>
         <item
             android:id="@+id/menu_seccion_2"
             android:icon="@drawable/limpiar_polylinea"
-            android:title="seccion_2"/>
+            android:title="PuntosRecargas"/>
     </group>
 
 </menu>

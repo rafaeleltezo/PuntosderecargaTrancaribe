@@ -5,8 +5,6 @@ package com.app.master.puntosderecargatrancaribe.Modelo.RestApi;
  */
 public class Paradero {
     private String nombre,descripcion;
-
-
     private double latitud,longitud;
 
     public Paradero() {

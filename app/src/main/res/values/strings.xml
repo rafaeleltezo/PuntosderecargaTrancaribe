@@ -3,6 +3,8 @@
     <string name="title_activity_maps">RecApp</string>
     <string name="baner">ca-app-pub-5246970221791662/8976968795</string>
     <string name="botonRuta">Rutas cercana</string>
+    <string name="RutaTranscaribe">Ruta transcaribe</string>
+    <string name="PuntosRecargas">Puntos de recargas</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
