@@ -39,10 +39,9 @@ public class FragmentoRutas extends Fragment {
         vista=inflater.inflate(R.layout.fragment_rutas, container, false);
         contador=0;
         ArrayList<Bus> busesCastellana=new ArrayList();
-        busesCastellana.add(new Bus("xt1093","Variante"));
-        busesCastellana.add(new Bus("xt1062","Bocagrande"));
-       //  busesCastellana.add(new Bus("xt101","Todas las paradas"));
-        // busesCastellana.add(new Bus("xt103","Crespo"));
+        //buses de la castellana
+        busesCastellana.add(new Bus("xt102","Variante"));
+        busesCastellana.add(new Bus("xt100","Bocagrande"));
         paraderoOrigen=new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,1);
         buscadorParaderoDestino("crespo");
         rutaCercana(paraderoOrigen,paraderoDestino);
@@ -53,30 +52,29 @@ public class FragmentoRutas extends Fragment {
         paraderos=new ArrayList();
         ArrayList<Bus> busesCastellana=new ArrayList();
         //buses de la castellana
-        busesCastellana.add(new Bus("xt1093","Variante"));
-        busesCastellana.add(new Bus("xt100","Bocagrande"));
-        busesCastellana.add(new Bus("xt102","Bocagrande"));
+        busesCastellana.add(new Bus("xt102","Variante"));
+        busesCastellana.add(new Bus("xt101","Bocagrande"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
         paraderos.add(new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,1));
         //buses de cuatro vientos
         ArrayList<Bus> busesCuatroVientos=new ArrayList();
-        busesCuatroVientos.add(new Bus("xt10930","Bocagrande"));
-        busesCuatroVientos.add(new Bus("xt100","Crespo"));
+        busesCuatroVientos.add(new Bus("xt109","Bocagrande"));
+        busesCuatroVientos.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesCuatroVientos,"Cuatro vientos","paradero Cuatro viento","cuatro viento,frente sena,sena",0,9,2));
         //paradero inventado
         ArrayList<Bus> busesInventado=new ArrayList();
-        busesInventado.add(new Bus("xt1093","Bocagrande"));
-        busesInventado.add(new Bus("xt109","Crespo"));
+        busesInventado.add(new Bus("xt102","Bocagrande"));
+        busesInventado.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesInventado,"inventado","paradero inventado","inventado. viento,",0,9,3));
 
         ArrayList<Bus> busesInventado2=new ArrayList();
         busesInventado2.add(new Bus("xt103","Bocagrande"));
-        busesInventado2.add(new Bus("xt100","Crespo"));
+        busesInventado2.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesInventado2,"inventado2","paradero inventado2","inventado. viento,",0,9,4));
         //buses de crespo
         ArrayList<Bus> busesCuatroCrespo=new ArrayList();
         busesCuatroCrespo.add(new Bus("xt102","Bocagrande"));
-        busesCuatroCrespo.add(new Bus("xt100","Crespo"));
+        busesCuatroCrespo.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesCuatroCrespo,"crespo","paradero crespo","crespo,prueba",0,9,5));
         return paraderos;
     }
@@ -125,7 +123,7 @@ public class FragmentoRutas extends Fragment {
             imprimir(buses);
             //Toast.makeText(getContext(), "Aborda el " + obtenerBusesParaAbordar(origen,destino).get(0).getNombre(), Toast.LENGTH_SHORT).show();
             return true;
-        }else if(obtenerBusesParaAbordar(origen,destino).size()>0){
+        }else if(obtenerBusesParaAbordar(origen,destino).size()>1){
             ArrayList<Bus>bus=filtroBusMenosParadas(obtenerBusesParaAbordar(origen,destino));
             if(bus.size()==1) {
                 buses.add(bus.get(0));
