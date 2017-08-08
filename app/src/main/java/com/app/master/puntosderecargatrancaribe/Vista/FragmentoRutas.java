@@ -77,7 +77,6 @@ public class FragmentoRutas extends Fragment {
         busesCuatroCrespo.add(new Bus("xt100","Crespo"));
         paraderos.add(new ParaderoBuscador(busesCuatroCrespo,"crespo","paradero crespo","crespo,prueba",0,9,5));
         return paraderos;
-
     }
 
 
