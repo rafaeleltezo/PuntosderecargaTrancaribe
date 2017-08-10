@@ -40,20 +40,54 @@ public class FragmentoRutas extends Fragment {
         contador=0;
         ArrayList<Bus> busesCastellana=new ArrayList();
         //buses de la castellana
-        busesCastellana.add(new Bus("xt1081","Variante"));
-        busesCastellana.add(new Bus("xt1051","Bocagrande"));
-        paraderoOrigen=new ParaderoBuscador(busesCastellana,"crespo","paradero crespo","crespo,prueba",0,9,1);
+        busesCastellana.add(new Bus("xt108","Variante"));
+        busesCastellana.add(new Bus("xt1010","Bocagrande"));
+        //busesCastellana.add(new Bus("xt101","Todas las paradas"));
+        paraderoOrigen=new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,0.1);
         buscadorParaderoDestino("crespo");
-        rutaCercana(paraderoOrigen,paraderoDestino);
+            if(paraderoDestino.getPosicion()>paraderoOrigen.getPosicion()){
+                rutaCercana(paraderoOrigen,paraderoDestino);
+            }
+            else {
+                convertirPosicionParaderosNegativo();
+            }
+
         return vista;
+    }
+
+    public void convertirPosicionParaderosNegativo(){
+        for (int i = 0; i <paraderos.size() ; i++) {
+
+        }
     }
     //datos entrantes
     public ArrayList<ParaderoBuscador> datosParadero(){
         paraderos=new ArrayList();
+
+        ArrayList<Bus> busesAlimentador1Castellana=new ArrayList();
+        //buses de la castellana
+        busesAlimentador1Castellana.add(new Bus("xt108","Variante"));
+        busesAlimentador1Castellana.add(new Bus("xt105","Bocagrande"));
+        //busesCastellana.add(new Bus("xt101","Todas las paradas"));
+        paraderos.add(new ParaderoBuscador(busesAlimentador1Castellana,"bomba el amparo","Paradero frente bomba el amparo","bomba el amparo,cai bomba el amparo,",0,0,0.1));
+
+        ArrayList<Bus> busesAlimentador2Castellana=new ArrayList();
+        //buses de la castellana
+        busesAlimentador2Castellana.add(new Bus("xt108","Variante"));
+        busesAlimentador2Castellana.add(new Bus("xt105","Bocagrande"));
+        //busesCastellana.add(new Bus("xt101","Todas las paradas"));
+        paraderos.add(new ParaderoBuscador(busesAlimentador1Castellana,"sao","Paradero frente sao","sao",0,0,0.2));
+
+        ArrayList<Bus> busesAlimentador3Castellana=new ArrayList();
+        //buses de la castellana
+        busesAlimentador3Castellana.add(new Bus("xt105","Bocagrande"));
+        //busesCastellana.add(new Bus("xt101","Todas las paradas"));
+        paraderos.add(new ParaderoBuscador(busesAlimentador1Castellana,"sanjose","Paradero frente sanjose","san jose",0,0,0.3));
+
         ArrayList<Bus> busesCastellana=new ArrayList();
         //buses de la castellana
-        busesCastellana.add(new Bus("xt1081","Variante"));
-        busesCastellana.add(new Bus("xt1051","Bocagrande"));
+        busesCastellana.add(new Bus("xt108","Variante"));
+        busesCastellana.add(new Bus("xt101","Bocagrande"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
         paraderos.add(new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,1));
         //buses de cuatro vientos
@@ -68,12 +102,12 @@ public class FragmentoRutas extends Fragment {
         paraderos.add(new ParaderoBuscador(busesInventado,"inventado","paradero inventado","inventado, viento,",0,9,3));
 
         ArrayList<Bus> busesInventado2=new ArrayList();
-        busesInventado2.add(new Bus("xt1081","Bocagrande"));
+        busesInventado2.add(new Bus("xt108","Bocagrande"));
         busesInventado2.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesInventado2,"inventado2","paradero inventado2","inventado, viento,",0,9,4));
         //buses de crespo
         ArrayList<Bus> busesCuatroCrespo=new ArrayList();
-        busesCuatroCrespo.add(new Bus("xt108","Bocagrande"));
+        busesCuatroCrespo.add(new Bus("xt1088","Bocagrande"));
         busesCuatroCrespo.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesCuatroCrespo,"crespo","paradero crespo","crespo,prueba",0,9,5));
         return paraderos;
@@ -162,18 +196,18 @@ public class FragmentoRutas extends Fragment {
 
        // if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0) {
             contador++;
-            int paraderoPosterior = paraderoDestino.getPosicion() + 1;
-            int paraderoAnterior = paraderoDestino.getPosicion() - contador;
+            double paraderoPosterior = paraderoDestino.getPosicion() + 1;
+            double paraderoAnterior = paraderoDestino.getPosicion() - contador;
 
 
 
             if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0){
-                if (rutaCercana(paraderoOrigen, paraderos.get(paraderoAnterior - 1))) {
-                    rutaCercana(paraderos.get(paraderoAnterior - 1), paraderoDestino);
+                if (rutaCercana(paraderoOrigen, paraderos.get((int)paraderoAnterior - 1))) {
+                    rutaCercana(paraderos.get((int)paraderoAnterior - 1), paraderoDestino);
                 }
             }else if(paraderoOrigen.getPosicion()<0 && paraderoDestino.getPosicion()<0){
-                if (rutaCercana(paraderoOrigen, paraderos.get(-1*(paraderoAnterior - 1)))) {
-                    rutaCercana(paraderos.get(-1*(paraderoAnterior - 1)), paraderoDestino);
+                if (rutaCercana(paraderoOrigen, paraderos.get(-1*((int) paraderoAnterior - 1)))) {
+                    rutaCercana(paraderos.get(-1*((int)paraderoAnterior - 1)), paraderoDestino);
                 }
             }
 
@@ -210,14 +244,14 @@ public class FragmentoRutas extends Fragment {
        // }
 
         if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0) {
-             for (int i=paraderoOrigen.getPosicion();i<paraderoDestino.getPosicion();i++) {
+             for (double i=paraderoOrigen.getPosicion();i<paraderoDestino.getPosicion();i++) {
             //Toast.makeText(getContext(), paraderos.get(i).getNombre(), Toast.LENGTH_SHORT).show();
-            para.add(paraderos.get(i));
+            para.add(paraderos.get((int)i));
              }
 
         }else if(paraderoOrigen.getPosicion()<0 && paraderoDestino.getPosicion()<0) {
-            for (int i = paraderoOrigen.getPosicion(); i < paraderoDestino.getPosicion(); i++) {
-                para.add(paraderos.get((-1 * (i)) - 1));
+            for (double i = paraderoOrigen.getPosicion(); i < paraderoDestino.getPosicion(); i++) {
+                para.add(paraderos.get((-1 * ((int)i)) - 1));
             }
         }
 
@@ -282,9 +316,9 @@ public class FragmentoRutas extends Fragment {
         //filtra los paraderos entre el origen y el destino devuelve un array con paraderos intermedios
         //for (Bus bus :buses) {
         //Toast.makeText(getContext(), "el bus: "+bus.getNombre()+ " para en ", Toast.LENGTH_SHORT).show();
-        for (int i = paraderoOrigen.getPosicion(); i < paraderoDestino.getPosicion(); i++) {
+        for (double i = paraderoOrigen.getPosicion(); i < paraderoDestino.getPosicion(); i++) {
             //Toast.makeText(getContext(), paraderos.get(i).getNombre(), Toast.LENGTH_SHORT).show();
-            para.add(paraderos.get(i));
+            para.add(paraderos.get((int)i));
             // }
         }
 

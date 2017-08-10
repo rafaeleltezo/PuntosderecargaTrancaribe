@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ParaderoBuscador {
 
-    private int posicion;
+    private double posicion;
     private ArrayList<Bus> bus;
     private String nombre,descripcion,palabrasClaves;
     private double latitud,longitud;
@@ -16,7 +16,7 @@ public class ParaderoBuscador {
     public ParaderoBuscador() {
     }
 
-    public ParaderoBuscador(ArrayList<Bus> bus, String nombre, String descripcion, String palabrasClaves, double latitud, double longitud,int posicion) {
+    public ParaderoBuscador(ArrayList<Bus> bus, String nombre, String descripcion, String palabrasClaves, double latitud, double longitud,double posicion) {
         this.bus = bus;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -26,11 +26,11 @@ public class ParaderoBuscador {
         this.posicion=posicion;
     }
 
-    public int getPosicion() {
+    public double getPosicion() {
         return posicion;
     }
 
-    public void setPosicion(int posicion) {
+    public void setPosicion(double posicion) {
         this.posicion = posicion;
     }
 
