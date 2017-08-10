@@ -40,9 +40,9 @@ public class FragmentoRutas extends Fragment {
         contador=0;
         ArrayList<Bus> busesCastellana=new ArrayList();
         //buses de la castellana
-        busesCastellana.add(new Bus("xt102","Variante"));
-        busesCastellana.add(new Bus("xt100","Bocagrande"));
-        paraderoOrigen=new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,1);
+        busesCastellana.add(new Bus("xt1081","Variante"));
+        busesCastellana.add(new Bus("xt1051","Bocagrande"));
+        paraderoOrigen=new ParaderoBuscador(busesCastellana,"crespo","paradero crespo","crespo,prueba",0,9,1);
         buscadorParaderoDestino("crespo");
         rutaCercana(paraderoOrigen,paraderoDestino);
         return vista;
@@ -52,8 +52,8 @@ public class FragmentoRutas extends Fragment {
         paraderos=new ArrayList();
         ArrayList<Bus> busesCastellana=new ArrayList();
         //buses de la castellana
-        busesCastellana.add(new Bus("xt102","Variante"));
-        busesCastellana.add(new Bus("xt101","Bocagrande"));
+        busesCastellana.add(new Bus("xt1081","Variante"));
+        busesCastellana.add(new Bus("xt1051","Bocagrande"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
         paraderos.add(new ParaderoBuscador(busesCastellana,"Castellana","Paradero de la castellana","castellana,Exito cartagena,",0,0,1));
         //buses de cuatro vientos
@@ -63,17 +63,17 @@ public class FragmentoRutas extends Fragment {
         paraderos.add(new ParaderoBuscador(busesCuatroVientos,"Cuatro vientos","paradero Cuatro viento","cuatro viento,frente sena,sena",0,9,2));
         //paradero inventado
         ArrayList<Bus> busesInventado=new ArrayList();
-        busesInventado.add(new Bus("xt102","Bocagrande"));
-        busesInventado.add(new Bus("xt101","Crespo"));
-        paraderos.add(new ParaderoBuscador(busesInventado,"inventado","paradero inventado","inventado. viento,",0,9,3));
+        busesInventado.add(new Bus("xt108","Bocagrande"));
+        busesInventado.add(new Bus("xt1011","Crespo"));
+        paraderos.add(new ParaderoBuscador(busesInventado,"inventado","paradero inventado","inventado, viento,",0,9,3));
 
         ArrayList<Bus> busesInventado2=new ArrayList();
-        busesInventado2.add(new Bus("xt103","Bocagrande"));
+        busesInventado2.add(new Bus("xt1081","Bocagrande"));
         busesInventado2.add(new Bus("xt101","Crespo"));
-        paraderos.add(new ParaderoBuscador(busesInventado2,"inventado2","paradero inventado2","inventado. viento,",0,9,4));
+        paraderos.add(new ParaderoBuscador(busesInventado2,"inventado2","paradero inventado2","inventado, viento,",0,9,4));
         //buses de crespo
         ArrayList<Bus> busesCuatroCrespo=new ArrayList();
-        busesCuatroCrespo.add(new Bus("xt102","Bocagrande"));
+        busesCuatroCrespo.add(new Bus("xt108","Bocagrande"));
         busesCuatroCrespo.add(new Bus("xt101","Crespo"));
         paraderos.add(new ParaderoBuscador(busesCuatroCrespo,"crespo","paradero crespo","crespo,prueba",0,9,5));
         return paraderos;
@@ -125,6 +125,8 @@ public class FragmentoRutas extends Fragment {
             return true;
         }else if(obtenerBusesParaAbordar(origen,destino).size()>1){
             ArrayList<Bus>bus=filtroBusMenosParadas(obtenerBusesParaAbordar(origen,destino));
+            filtroBusMenosParadas(obtenerBusesParaAbordar(origen,destino));
+
             if(bus.size()==1) {
                 buses.add(bus.get(0));
                 imprimir(buses);
@@ -132,7 +134,7 @@ public class FragmentoRutas extends Fragment {
                 return true;
             }else if(bus.size()>1) {
                 buses.add(bus.get(0));
-                buses.add(bus.get(1));
+                //buses.add(bus.get(1));
                 imprimir(buses);
                 //Toast.makeText(getContext(), "Mejor ruta es: "+ bus.get(0).getNombre(), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(getContext(), "Ruta segundaria es: "+ bus.get(1).getNombre(), Toast.LENGTH_SHORT).show();
@@ -156,16 +158,30 @@ public class FragmentoRutas extends Fragment {
         }
     }
     private void rutaTransbordo(){
-        int cantidadParaderos=paraderos.size();
+        int cantidadParaderos = paraderos.size();
+
+       // if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0) {
             contador++;
-            int paraderoPosterior=paraderoDestino.getPosicion()+1;
-            int paraderoAnterior= paraderoDestino.getPosicion()-contador;
+            int paraderoPosterior = paraderoDestino.getPosicion() + 1;
+            int paraderoAnterior = paraderoDestino.getPosicion() - contador;
 
-                if(rutaCercana(paraderoOrigen,paraderos.get(paraderoAnterior-1))){
-                    rutaCercana(paraderos.get(paraderoAnterior-1),paraderoDestino);
+
+
+            if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0){
+                if (rutaCercana(paraderoOrigen, paraderos.get(paraderoAnterior - 1))) {
+                    rutaCercana(paraderos.get(paraderoAnterior - 1), paraderoDestino);
                 }
+            }else if(paraderoOrigen.getPosicion()<0 && paraderoDestino.getPosicion()<0){
+                if (rutaCercana(paraderoOrigen, paraderos.get(-1*(paraderoAnterior - 1)))) {
+                    rutaCercana(paraderos.get(-1*(paraderoAnterior - 1)), paraderoDestino);
+                }
+            }
 
 
+
+       // }else{
+         //   Toast.makeText(getContext(), "paradero menor", Toast.LENGTH_SHORT).show();
+        //}
         //ArrayList<Bus>buses=obtenerBusesParaAbordar();
         //Toast.makeText(getContext(), buses.get(0).getNombre(), Toast.LENGTH_SHORT).show();
         /*
@@ -186,32 +202,39 @@ public class FragmentoRutas extends Fragment {
         //filtra los paraderos entre el origen y el destino devuelve un array con paraderos intermedios
         //for (Bus bus :buses) {
             //Toast.makeText(getContext(), "el bus: "+bus.getNombre()+ " para en ", Toast.LENGTH_SHORT).show();
-            for (int i=paraderoOrigen.getPosicion();i<paraderoDestino.getPosicion();i++) {
+           // for (int i=paraderoOrigen.getPosicion();i<paraderoDestino.getPosicion();i++) {
                 //Toast.makeText(getContext(), paraderos.get(i).getNombre(), Toast.LENGTH_SHORT).show();
-                para.add(paraderos.get(i));
+                //para.add(paraderos.get(i));
+
            // }
+       // }
+
+        if(paraderoOrigen.getPosicion()>0 && paraderoDestino.getPosicion()>0) {
+             for (int i=paraderoOrigen.getPosicion();i<paraderoDestino.getPosicion();i++) {
+            //Toast.makeText(getContext(), paraderos.get(i).getNombre(), Toast.LENGTH_SHORT).show();
+            para.add(paraderos.get(i));
+             }
+
+        }else if(paraderoOrigen.getPosicion()<0 && paraderoDestino.getPosicion()<0) {
+            for (int i = paraderoOrigen.getPosicion(); i < paraderoDestino.getPosicion(); i++) {
+                para.add(paraderos.get((-1 * (i)) - 1));
+            }
         }
 
 
         //obteniendo el origen y destino de paraderos se compara los intermedios por nombre buses que necesita
 
-       // Object[][] cadena=new Object[3][para.size()];
 
         ArrayList<AuxiliarBus> auxiliar=new ArrayList();
         for (Bus b:buses) {
             String nombre=b.getNombre();
             int numero=1;
-            //Toast.makeText(getContext(), "evaluando bus: "+nombre, Toast.LENGTH_SHORT).show();
+
                 for (ParaderoBuscador p:para) {
-                    //Toast.makeText(getContext(), "evaluando paraderos: "+p.getNombre(), Toast.LENGTH_SHORT).show();
+
 
                     for (int i = 0; i < p.getBus().size(); i++) {
                         if(nombre.equals(p.getBus().get(i).getNombre())){
-                           // Toast.makeText(getContext(),"Encontrado: "+ p.getBus().get(i).getNombre(), Toast.LENGTH_SHORT).show();
-                         /*   cadena[0][i]=p.getBus().get(i).getNombre();
-                            cadena[1][i]=numero++;
-                            cadena[2][i]=p.getBus().get(i);
-                         */
                          auxiliar.add(new AuxiliarBus(numero++,p.getBus().get(i)));
                         }
 
@@ -230,13 +253,13 @@ public class FragmentoRutas extends Fragment {
 
 
         for (int i=0;i<auxiliar.size();i++) {
-           //Toast.makeText(getContext(),auxiliar.get(i).getBus().getNombre(), Toast.LENGTH_SHORT).show();
+
 
                for (int j = 0; j < a.size(); j++) {
 
                    if (auxiliar.get(i).getBus().getNombre().equals(a.get(j).getBus().getNombre()) && (auxiliar.get(i).getContador() < a.get(j).getContador())) {
                        b.remove(i);
-                       //Toast.makeText(getContext(), "entre", Toast.LENGTH_SHORT).show();
+
                    }
                }
 
@@ -248,36 +271,6 @@ public class FragmentoRutas extends Fragment {
             bus.add(ax.getBus());
         }
         return bus ;
-
-
-
-/*
-        int posicion=(Integer) cadena[1][0];
-        Bus busMenosParadas=busMenosParadas=null;
-        Toast.makeText(getContext(), cadena[1][1].toString(), Toast.LENGTH_SHORT).show();
-
-
-        for (int i = 0; i < cadena[1].length; i++) {
-
-
-           // for (int j = 0; j <cadena[i].length ; j++) {
-
-                //if(palabra.equals("null")){
-                    //Toast.makeText(getContext(), palabra, Toast.LENGTH_SHORT).show();
-                //}else {
-
-
-                int n = (Integer) cadena[1][i];
-                if (n <= posicion) {
-                    posicion = n;
-
-                    //busMenosParadas = (Bus) cadena[2][i];
-                }
-
-        }
-*/
-        //Toast.makeText(getContext(),auxiliar(auxiliar).getNombre(), Toast.LENGTH_SHORT).show();
-
 
     }
 
@@ -310,11 +303,6 @@ public class FragmentoRutas extends Fragment {
 
                 for (int i = 0; i < p.getBus().size(); i++) {
                     if (nombre.equals(p.getBus().get(i).getNombre())) {
-                        // Toast.makeText(getContext(),"Encontrado: "+ p.getBus().get(i).getNombre(), Toast.LENGTH_SHORT).show();
-                         /*   cadena[0][i]=p.getBus().get(i).getNombre();
-                            cadena[1][i]=numero++;
-                            cadena[2][i]=p.getBus().get(i);
-                         */
                         auxiliar.add(new AuxiliarBus(numero++, p.getBus().get(i)));
                     }
 
