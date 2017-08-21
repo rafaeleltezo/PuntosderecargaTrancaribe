@@ -10,13 +10,13 @@ public class ParaderoBuscador {
 
     private double posicion;
     private ArrayList<Bus> bus;
-    private String nombre,descripcion,palabrasClaves;
+    private String nombre,descripcion,palabrasClaves,tipo;
     private double latitud,longitud;
 
     public ParaderoBuscador() {
     }
 
-    public ParaderoBuscador(ArrayList<Bus> bus, String nombre, String descripcion, String palabrasClaves, double latitud, double longitud,double posicion) {
+    public ParaderoBuscador(ArrayList<Bus> bus, String nombre, String descripcion, String palabrasClaves, double latitud, double longitud,double posicion,String tipo) {
         this.bus = bus;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -24,6 +24,7 @@ public class ParaderoBuscador {
         this.latitud = latitud;
         this.longitud = longitud;
         this.posicion=posicion;
+        this.tipo=tipo;
     }
 
     public double getPosicion() {
@@ -80,5 +81,13 @@ public class ParaderoBuscador {
 
     public void setLongitud(double longitud) {
         this.longitud = longitud;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }
