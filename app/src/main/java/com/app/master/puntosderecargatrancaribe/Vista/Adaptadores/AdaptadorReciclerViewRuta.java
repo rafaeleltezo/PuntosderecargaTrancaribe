@@ -39,8 +39,13 @@ public class AdaptadorReciclerViewRuta extends RecyclerView.Adapter<AdaptadorRec
     public void onBindViewHolder(AdaptadorHolder holder, int position) {
         RutaBusParadero ruta=rutaBusParaderos.get(position);
         holder.contador.setText(String.valueOf(contador++));
-        holder.nombreBus.setText("Aborda "+ruta.getNombreBus());
-        holder.contador.setText("En el "+ruta.getParaderoBuscador().getDescripcion());
+        if(rutaBusParaderos.size()==position+1){
+            holder.nombreBus.setText("Bajate en "+ruta.getNombreBus());
+            holder.nombreEstacion.setText("En el "+ruta.getParaderoBuscador().getDescripcion());
+        }else {
+            holder.nombreBus.setText("Aborda "+ruta.getNombreBus());
+            holder.nombreEstacion.setText("En el "+ruta.getParaderoBuscador().getDescripcion());
+        }
     }
 
     @Override
