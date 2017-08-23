@@ -4,11 +4,23 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.app.master.puntosderecargatrancaribe.MapsActivity;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.AuxiliarBus;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.Bus;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.ParaderoBuscador;
@@ -16,6 +28,7 @@ import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.Ru
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Paradero;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RutaCorta;
 import com.app.master.puntosderecargatrancaribe.R;
+import com.app.master.puntosderecargatrancaribe.Vista.Adaptadores.AdaptadorReciclerViewRuta;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -25,7 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class FragmentoRutas extends Fragment {
+public class FragmentoRutas extends Fragment implements View.OnClickListener {
 
     private View vista;
     private ParaderoBuscador paraderoOrigen;
@@ -33,6 +46,10 @@ public class FragmentoRutas extends Fragment {
     private ArrayList<ParaderoBuscador> paraderos;
     private ArrayList<ParaderoBuscador> paraderoSegundarios;
     private ArrayList<RutaBusParadero> rutaBusParaderos;
+    private AutoCompleteTextView autoCompletador;
+    private Button botonIr;
+    private RecyclerView recyclerView;
+
     int contador;
 
 
@@ -40,28 +57,74 @@ public class FragmentoRutas extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
         vista=inflater.inflate(R.layout.fragment_rutas, container, false);
-        contador=0;
-        rutaBusParaderos =new ArrayList();
 
+        contador=0;
         paraderos=datosParadero();
         paraderoSegundarios=datosParaderoSegundario();
+        ArrayList<String>cadena=new ArrayList();
+        for (ParaderoBuscador p:paraderos) {
+            cadena.add(descomponerpalabra(p.getPalabrasClaves()));
+        }
+        for (ParaderoBuscador p:paraderoSegundarios){
+            cadena.add(descomponerpalabra(p.getPalabrasClaves()));
+        }
+        recyclerView=(RecyclerView)vista.findViewById(R.id.recycler);
+        autoCompletador=(AutoCompleteTextView)vista.findViewById(R.id.buscarDestino);
+        botonIr=(Button)vista.findViewById(R.id.botonIr);
+        botonIr.setOnClickListener(this);
+        ArrayAdapter<String> sa=new ArrayAdapter<String>(getContext(),android.R.layout.select_dialog_item,cadena);
+        autoCompletador.setThreshold(1);
+        autoCompletador.setAdapter(sa);
+
+
+        //buscadorParaderoDestino();
+
+        //setHasOptionsMenu(true);
+
         ArrayList<Bus> busesBombaGallo=new ArrayList();
         //buses de la castellana
         busesBombaGallo.add(new Bus("t102","Crespo"));
         busesBombaGallo.add(new Bus("t101","Portal"));
-        busesBombaGallo.add(new Bus("t1031","Bocagrande"));
+        busesBombaGallo.add(new Bus("t103","Bocagrande"));
         busesBombaGallo.add(new Bus("t100","Expresa"));
         paraderoOrigen=new ParaderoBuscador(busesBombaGallo,"Bomba del gallo","Paradero frente Bomba del gallo","Bomba del gallo",0,0,1,"principal");
-        buscadorParaderoDestino("sao");
+        //buscadorParaderoDestino("sao");
 
+
+
+
+        return vista;
+    }
+
+
+    public String descomponerpalabra(String palabra){
+        String[]palabras=palabra.split(",");
+        for (String palabrasc:palabras) {
+            String sinEspacio=palabrasc.trim();
+            return sinEspacio;
+        }
+        return null;
+    }
+    public void imprimire(){
+        for (RutaBusParadero s:rutaBusParaderos) {
+            Toast.makeText(getContext(),"Aborda el "+s.getNombreBus()+"en el paradero "+s.getParaderoBuscador().getNombre(), Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(getContext(), "Para llegar al paradero "+paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void determinarRuta(){
         if(paraderoOrigen.getTipo().equals("segundario") && paraderoDestino.getTipo().equals("segundario")){
             int origenPosicion=(int)paraderoOrigen.getPosicion();
             int destinoPosicion=(int)paraderoDestino.getPosicion();
+            rutaBusParaderos =new ArrayList();
             //rutaVenidaeIda(paraderoOrigen, paraderoDestino);
 
             if(origenPosicion==destinoPosicion){
+                rutaBusParaderos =new ArrayList();
                 rutaVenidaeIda(paraderoOrigen,paraderoDestino);
+
             }else{
+                rutaBusParaderos =new ArrayList();
                 int destinoParadero=(int)paraderoOrigen.getPosicion()+1;
                 ParaderoBuscador destinosegundario=obtenerPosicionParaderoPrincipal(destinoParadero);
                 //Toast.makeText(getContext(), destinosegundario.getNombre(), Toast.LENGTH_SHORT).show();
@@ -78,6 +141,7 @@ public class FragmentoRutas extends Fragment {
             }
 
         }else if(paraderoOrigen.getTipo().equals("segundario")&&paraderoDestino.getTipo().equals("principal")){
+            rutaBusParaderos =new ArrayList();
             int destino=(int)paraderoOrigen.getPosicion()+1;
             ParaderoBuscador destinosegundario=obtenerPosicionParaderoPrincipal(destino);
             //Toast.makeText(getContext(), destinosegundario.getNombre(), Toast.LENGTH_SHORT).show();
@@ -90,10 +154,12 @@ public class FragmentoRutas extends Fragment {
             //rutaVenidaeIda(paraderoOrigen,paraderoDestino);
 
         }else if(paraderoDestino.getTipo().equals("principal")&& paraderoOrigen.getTipo().equals("principal")) {
+            rutaBusParaderos =new ArrayList();
             rutaVenidaeIda(paraderoOrigen,paraderoDestino);
-            Toast.makeText(getContext(), "principales", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "principales", Toast.LENGTH_SHORT).show();
 
         }else if(paraderoDestino.getTipo().equals("segundario")&&paraderoOrigen.getTipo().equals("principal")){
+            rutaBusParaderos =new ArrayList();
             int destino=(int)paraderoDestino.getPosicion()+1;
             ParaderoBuscador destinosegundario=obtenerPosicionParaderoPrincipal(destino);
             rutaVenidaeIda(paraderoOrigen,destinosegundario);
@@ -115,11 +181,44 @@ public class FragmentoRutas extends Fragment {
                 rutaVenidaeIda(paraderoOrigen,paraderoDestino);
                 break;
         }*/
-
-        return vista;
+        //imprimire();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.buscador, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        SearchView searchView = new SearchView(((Principal) getContext()).getSupportActionBar().getThemedContext());
+        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+        MenuItemCompat.setActionView(item, searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(buscadorParaderoDestino(query)){
+                    determinarRuta();
+                    return true;
+                }
 
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+               // Toast.makeText(getContext(), newText, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        searchView.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View v) {
+
+                                          }
+                                      }
+        );
+
+
+    }
 
     public ArrayList<RutaBusParadero> obtenerrutas(){
         rutaBusParaderos.add(new RutaBusParadero(paraderoDestino,paraderoDestino.getNombre()));
@@ -193,7 +292,7 @@ public class FragmentoRutas extends Fragment {
         //buses de la castellana
         busesBombaGallo.add(new Bus("t102","Crespo"));
         busesBombaGallo.add(new Bus("t101","Portal"));
-        busesBombaGallo.add(new Bus("t1031","Bocagrande"));
+        busesBombaGallo.add(new Bus("t103","Bocagrande"));
         busesBombaGallo.add(new Bus("t100","Expresa"));
         paraderos.add(new ParaderoBuscador(busesBombaGallo,"Bomba del gallo","Paradero frente Bomba del gallo","Bomba del gallo",0,0,1,"principal"));
 
@@ -242,7 +341,7 @@ public class FragmentoRutas extends Fragment {
 
     //Buscar el paradero de destino a donde se dirige
 
-    public void buscadorParaderoDestino(String destino){
+    public Boolean buscadorParaderoDestino(String destino){
 
         //buscador de paradero destino con el nombre solicitado por el usuario
 
@@ -252,7 +351,8 @@ public class FragmentoRutas extends Fragment {
                     //Toast.makeText(getContext(), "Encontrado "+"Nombre del paradero: "+paradero.getNombre(), Toast.LENGTH_SHORT).show();
                     this.paraderoDestino=paradero;
                     //Toast.makeText(getContext(), paraderoDestino.getPalabrasClaves(), Toast.LENGTH_SHORT).show();
-                    break;
+                    return true;
+
                 }
             }
         }
@@ -262,10 +362,12 @@ public class FragmentoRutas extends Fragment {
                     //Toast.makeText(getContext(), "Encontrado "+"Nombre del paradero: "+paradero.getNombre(), Toast.LENGTH_SHORT).show();
                     this.paraderoDestino=paradero;
                     //Toast.makeText(getContext(), paraderoDestino.getPalabrasClaves(), Toast.LENGTH_SHORT).show();
-                    break;
+                    return true;
+
                 }
             }
         }
+        return false;
     }
 
     public ArrayList<Bus> obtenerBusesParaAbordar(ParaderoBuscador origen,ParaderoBuscador destino){
@@ -290,7 +392,8 @@ public class FragmentoRutas extends Fragment {
 
         if(obtenerBusesParaAbordar(origen,destino).size()==1){
             buses.add(obtenerBusesParaAbordar(origen,destino).get(0));
-            rutaBusParaderos.add(new RutaBusParadero(origen,buses.get(0).getNombre()));
+            rutaBusParaderos.add(new RutaBusParadero(origen,obtenerBusesParaAbordar(origen,destino).get(0).getNombre()));
+
             //imprimir(buses);
 
             //Toast.makeText(getContext(), "Aborda el " + obtenerBusesParaAbordar(origen,destino).get(0).getNombre(), Toast.LENGTH_SHORT).show();
@@ -301,17 +404,19 @@ public class FragmentoRutas extends Fragment {
             //Toast.makeText(getContext(),"son "+String.valueOf(bus.size()) , Toast.LENGTH_SHORT).show();
             if(bus.size()==0){
                 buses.add(obtenerBusesParaAbordar(origen,destino).get(0));
-                rutaBusParaderos.add(new RutaBusParadero(origen,buses.get(0).getNombre()));
+
+                rutaBusParaderos.add(new RutaBusParadero(origen,obtenerBusesParaAbordar(origen,destino).get(0).getNombre()));
                 //imprimir(buses);
             }else if(bus.size()==1) {
                 buses.add(bus.get(0));
-                rutaBusParaderos.add(new RutaBusParadero(origen,buses.get(0).getNombre()));
+                rutaBusParaderos.add(new RutaBusParadero(origen,obtenerBusesParaAbordar(origen,destino).get(0).getNombre()));
                 //imprimir(buses);
                 //Toast.makeText(getContext(), "Aborda: " + bus.get(0).getNombre(), Toast.LENGTH_SHORT).show();
                 return true;
             }else if(bus.size()>1) {
                 buses.add(bus.get(0));
-                rutaBusParaderos.add(new RutaBusParadero(origen,buses.get(0).getNombre()));
+
+                rutaBusParaderos.add(new RutaBusParadero(origen,obtenerBusesParaAbordar(origen,destino).get(0).getNombre()));
                 //buses.add(bus.get(1));
                 //imprimir(buses);
                 //Toast.makeText(getContext(), "Mejor ruta es: "+ bus.get(0).getNombre(), Toast.LENGTH_SHORT).show();
@@ -326,7 +431,6 @@ public class FragmentoRutas extends Fragment {
            //Toast.makeText(getContext(), paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
            rutaTransbordo();
        }
-
 
        return false;
     }
@@ -552,4 +656,15 @@ public class FragmentoRutas extends Fragment {
         return palabrasClaves;
     }
 
+    @Override
+    public void onClick(View v) {
+        if(buscadorParaderoDestino(autoCompletador.getText().toString())){
+            determinarRuta();
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(),obtenerrutas()));
+
+        }else {
+            Toast.makeText(getContext(), "No hay paraderos", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

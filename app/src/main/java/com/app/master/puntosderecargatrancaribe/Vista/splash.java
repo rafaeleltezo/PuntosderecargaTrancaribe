@@ -13,6 +13,7 @@ public class splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, Principal.class);
         startActivity(intent);
+
         finish();
     }
 }

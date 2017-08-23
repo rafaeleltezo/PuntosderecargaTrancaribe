@@ -1,13 +1,35 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.app.master.puntosderecargatrancaribe.Vista.FragmentoRutas">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    tools:context="com.app.master.puntosderecargatrancaribe.Vista.FragmentoRutas"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buscar"
+            android:layout_gravity="center"/>
+        <AutoCompleteTextView
+            android:layout_width="219dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/buscarDestino"
+            android:hint="@string/autocompletar" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textoir"
+            android:id="@+id/botonIr"/>
+    </LinearLayout>
+    <com.google.android.gms.maps.MapView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"/>
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/recycler"/>
 
-</FrameLayout>
+</LinearLayout>

@@ -12,6 +12,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -70,11 +72,13 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     private Polyline polyline;
     private AdView adView;
     private AdRequest adRequest;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        toolbar=(Toolbar)findViewById(R.id.toolbars);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -403,5 +407,7 @@ public class MapsActivity extends FragmentActivity implements iMapsActivity, OnM
     public void onMapClick(LatLng latLng) {
         boton.setVisibility(View.INVISIBLE);
     }
+
+
 }
 
