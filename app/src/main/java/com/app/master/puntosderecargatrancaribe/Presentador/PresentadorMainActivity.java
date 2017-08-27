@@ -313,8 +313,8 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
                         @Override
                         public void onFailure(Call<RespuestaRutaCorta> call, Throwable t) {
-                            Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
                             progreso.dismiss();
+                            Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -331,4 +331,6 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
 
     }
+
+
 }
