@@ -33,7 +33,19 @@ public class Principal extends AppCompatActivity implements iPrincipal{
         //presentador.iniciarViewPager();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navView = (NavigationView) findViewById(R.id.navview);
+        navView.setCheckedItem(R.id.menu_seccion_1);
 
+        boolean fragmentTransaction = false;
+        Fragment fragment = null;
+        fragment = new FragmentoRutas();
+        fragmentTransaction = true;
+        if(fragmentTransaction) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        }
+
+        drawerLayout.closeDrawers();
         navView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -44,11 +56,11 @@ public class Principal extends AppCompatActivity implements iPrincipal{
 
                         switch (menuItem.getItemId()) {
                             case R.id.menu_seccion_1:
-                                fragment = new FragmentMapaPuntoRecarga();
+                                fragment = new FragmentoRutas();
                                 fragmentTransaction = true;
                                 break;
                             case R.id.menu_seccion_2:
-                                fragment=new FragmentoRutas();
+                                fragment=new FragmentMapaPuntoRecarga();
                                 fragmentTransaction = true;
                                 break;
                         }
@@ -70,7 +82,7 @@ public class Principal extends AppCompatActivity implements iPrincipal{
         Toolbar appbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(appbar);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.punto_recarga);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }

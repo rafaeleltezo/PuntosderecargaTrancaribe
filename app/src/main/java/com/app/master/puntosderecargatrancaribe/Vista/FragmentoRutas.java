@@ -92,7 +92,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     private Location localizacion;
     private GoogleMap mMap;
     private final String token = "AIzaSyDjjRBHOHlbzcFrVl_xQAK07u0EZyr19YQ";
-
+    private ArrayList<ParaderoDistancia> distancias;
     int contador;
     private GoogleApiClient apiClient;
     private MapView mapView;
@@ -311,14 +311,14 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         busesAlimentador1Castellana.add(new Bus("t106", "Variante"));
         //busesAlimentador1Castellana.add(new Bus("t1018","Bocagrande"));
         // busesAlimentador1Castellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador1Castellana, "bomba el amparo", "Paradero frente bomba el amparo", "bomba el amparo,cai bomba el amparo,", 0, 0, 1.1, "segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador1Castellana, "bomba el amparo", "Paradero frente bomba el amparo", "bomba el amparo,cai bomba el amparo,", 10.3807949925699,-75.46381123809, 1.1, "segundario"));
 
         ArrayList<Bus> busesAlimentador2Castellana = new ArrayList();
         //buses de la castellana
         busesAlimentador2Castellana.add(new Bus("t103", "Variante"));
         // busesAlimentador2Castellana.add(new Bus("t1031","Bocagrande"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador2Castellana, "sao", "Paradero frente sao", "sao", 10.382177949925699,-75.46980371123809, 1.2, "segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador2Castellana, "sao", "Paradero frente sao", "sao", 10.380177949925,-75.46380371129, 1.2, "segundario"));
 
         ArrayList<Bus> busesAlimentador3Castellana = new ArrayList();
         //buses de la castellana
@@ -713,6 +713,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
             paraderoB.add(paraderoDestino);
             mostrarRutaEnMapa(paraderoB);
 
+
         } else {
             Toast.makeText(getContext(), "No hay paraderos", Toast.LENGTH_SHORT).show();
         }
@@ -763,8 +764,10 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
             setLocalizacion(loc);
             paraderoCercano();
 
+
+
         } else {
-            Toast.makeText(getContext(), "Localizacion desconocida", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -832,8 +835,8 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     private void enableLocationUpdates() {
 
         locRequest = new LocationRequest();
-        locRequest.setInterval(2000);
-        locRequest.setFastestInterval(1000);
+        locRequest.setInterval(3000);
+        locRequest.setFastestInterval(2000);
         locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest locSettingsRequest =
@@ -858,7 +861,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         try {
-                            Log.i(LOGTAG, "Se requiere actuación del usuario");
+                            Toast.makeText(getContext(), "Active GPS para ubicar paraderos cercanos", Toast.LENGTH_SHORT).show();
                             status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
                         } catch (IntentSender.SendIntentException e) {
                             Toast.makeText(getContext(), "Error al intentar solucionar configuración de ubicación", Toast.LENGTH_SHORT).show();
@@ -990,12 +993,24 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         paraderoOrigen=paraderosOrigen.get(0);
         tarea t=new tarea(paraderosOrigen);
         t.execute();
+        if(distancias!=null&&distancias.size()>0){
+            double contador=distancias.get(0).getDistancia();
+            ParaderoDistancia para;
+            for (ParaderoDistancia p:distancias) {
+
+                if(p.getDistancia()<=contador){
+                    paraderoOrigen=p.getParaderoBuscador();
+                    //Toast.makeText(getContext(), p.getParaderoBuscador().getNombre(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+
 
 
     }
     private class tarea extends AsyncTask<Void,Void,Void> {
         private ArrayList<ParaderoBuscador>para;
-        private ArrayList<ParaderoDistancia> distancias;
 
         public tarea(ArrayList<ParaderoBuscador>paradero){
             para=paradero;
@@ -1017,7 +1032,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
                     public void onResponse(Call<RespuestaRutaCorta> call, Response<RespuestaRutaCorta> response) {
                         RespuestaRutaCorta respues=response.body();
                         distancias.add(new ParaderoDistancia(respues.getDistancia(),p));
-                        Toast.makeText(getContext(),String.valueOf(respues.getDistancia()), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getContext(),"el paradero "+p.getNombre()+" "+String.valueOf(respues.getDistancia()), Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -1026,10 +1041,6 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
                         Toast.makeText(getContext(),"Error al conectarse al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
                     }
                 });
-            }
-            for (ParaderoDistancia p:distancias) {
-                Toast.makeText(getActivity(),p.getParaderoBuscador().getNombre(), Toast.LENGTH_SHORT).show();
-
             }
 
             return null;
