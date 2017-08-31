@@ -6,4 +6,5 @@ package com.app.master.puntosderecargatrancaribe.Modelo.RestApi;
 
 public class FirebaseReferences {
     public static final String referencia_recarga="PuntoRecarga";
+    public static final String referencia_estaciones="Estaciones";
 }

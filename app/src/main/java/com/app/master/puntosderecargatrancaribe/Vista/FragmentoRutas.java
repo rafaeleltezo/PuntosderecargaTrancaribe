@@ -8,8 +8,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.AdaptadorEnpointGoogle;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.AuxiliarBus;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Endpoin;
+import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.FirebaseReferences;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.Bus;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.ParaderoBuscador;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.ParaderoDistancia;
@@ -60,6 +63,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -96,6 +104,9 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     int contador;
     private GoogleApiClient apiClient;
     private MapView mapView;
+    private FirebaseDatabase database;
+    private ArrayList<ParaderoBuscador>paraderosFirebase;
+    private ArrayList<String> busqueda;
 
 
     @Override
@@ -106,22 +117,23 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         contador = 0;
         paraderos = datosParadero();
         paraderoSegundarios = datosParaderoSegundario();
-        ArrayList<String> cadena = new ArrayList();
-        for (ParaderoBuscador p : paraderos) {
-            cadena.add(descomponerpalabra(p.getPalabrasClaves()));
-        }
+        busqueda = new ArrayList();
+        /*for (ParaderoBuscador p : paraderos) {
+            busqueda.add(descomponerpalabra(p.getPalabrasClaves()));
+        }*/
         for (ParaderoBuscador p : paraderoSegundarios) {
-            cadena.add(descomponerpalabra(p.getPalabrasClaves()));
+            busqueda.add(descomponerpalabra(p.getPalabrasClaves()));
         }
         recyclerView = (RecyclerView) vista.findViewById(R.id.recycler);
         autoCompletador = (AutoCompleteTextView) vista.findViewById(R.id.buscarDestino);
         botonIr = (Button) vista.findViewById(R.id.botonIr);
         botonIr.setOnClickListener(this);
-        ArrayAdapter<String> sa = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, cadena);
+        ArrayAdapter<String> sa = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, busqueda);
         autoCompletador.setThreshold(1);
         autoCompletador.setAdapter(sa);
 
         //buscadorParaderoDestino();
+
 
         //setHasOptionsMenu(true);
 
@@ -137,6 +149,30 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         return vista;
     }
 
+    public ArrayList<ParaderoBuscador> paraderos(){
+        paraderosFirebase=new ArrayList();
+        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        DatabaseReference myRef = database.getReference("Paraderos");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dato : dataSnapshot.getChildren()) {
+                    ParaderoBuscador paraderoBuscador = dato.getValue(ParaderoBuscador.class);
+                    paraderosFirebase.add(paraderoBuscador);
+                    busqueda.add(descomponerpalabra(paraderoBuscador.getPalabrasClaves()));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getContext(), "Error en el servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Toast.makeText(getContext(), String.valueOf(paraderosFirebase.size()), Toast.LENGTH_SHORT).show();
+        return paraderosFirebase;
+    }
 
     public String descomponerpalabra(String palabra) {
         String[] palabras = palabra.split(",");
@@ -306,6 +342,14 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
     public ArrayList<ParaderoBuscador> datosParaderoSegundario() {
         paraderoSegundarios = new ArrayList();
+        /*
+        for (ParaderoBuscador p:paraderosFirebase) {
+            if(p.getTipo().equals("segundario")){
+                paraderoSegundarios.add(p);
+            }
+        }
+        */
+
         ArrayList<Bus> busesAlimentador1Castellana = new ArrayList();
         //buses de la castellana
         busesAlimentador1Castellana.add(new Bus("t106", "Variante"));
@@ -326,13 +370,22 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
         paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador3Castellana, "sanjose", "Paradero frente sanjose", "san jose", 10.380177949925699,-75.46380371123809, 1.3,
                 "segundario"));
+
         return paraderoSegundarios;
     }
 
     //datos entrantes
     public ArrayList<ParaderoBuscador> datosParadero() {
         paraderos = new ArrayList();
+        for (ParaderoBuscador p:paraderosFirebase){
+            if(p.getTipo().equals("principal")){
+                //Toast.makeText(getContext(), String.valueOf(p.getBus().size()), Toast.LENGTH_SHORT).show();
+                paraderos.add(p);
+            }
+            //Toast.makeText(getContext(), String.valueOf(paraderos.get(0)), Toast.LENGTH_SHORT).show();
 
+        }
+    /*
         ArrayList<Bus> busesBombaGallo = new ArrayList();
         //buses de la castellana
         busesBombaGallo.add(new Bus("t102", "Crespo"));
@@ -379,7 +432,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         busesBasurto.add(new Bus("t102", "Crespo"));
         busesBasurto.add(new Bus("t108", "Bocagrande"));
         paraderos.add(new ParaderoBuscador(busesBasurto, "Basurto", "paradero Basurto", "mercado Basurto",10.413787102918551,-75.52402340000003, 7, "principal"));
-
+*/
         return paraderos;
     }
 
@@ -730,6 +783,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        paraderos();
         if (apiClient == null || !apiClient.isConnected()) {
             try {
                 apiClient = new GoogleApiClient.Builder(getContext())
@@ -762,13 +816,38 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         if (loc != null) {
            // Toast.makeText(getContext(), "Latitud"+loc.getLatitude()+"Longitud"+loc.getLongitude(), Toast.LENGTH_SHORT).show();
             setLocalizacion(loc);
-            paraderoCercano();
+            if(verificarInternet()){
+                paraderoCercano();
+            }
+            else {
+                Snackbar.make(getView(),"Conectese a internet para determinar paradero cercano",Snackbar.LENGTH_LONG).setAction("Abrir ajustes", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                }).show();
+            }
+
 
 
 
         } else {
             Toast.makeText(getContext(), "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
         }
+    }
+    public Boolean verificarInternet() {
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+
+            int val = p.waitFor();
+            boolean reachable = (val == 0);
+            return reachable;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     @Override

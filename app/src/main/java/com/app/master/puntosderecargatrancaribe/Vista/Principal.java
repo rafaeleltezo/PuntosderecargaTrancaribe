@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 import com.app.master.puntosderecargatrancaribe.Presentador.iPresentadorPrincipal;
 import com.app.master.puntosderecargatrancaribe.R;
@@ -32,7 +33,7 @@ public class Principal extends AppCompatActivity implements iPrincipal{
         //presentador=new PresentadorPrincipal(this,this);
         //presentador.iniciarViewPager();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navView = (NavigationView) findViewById(R.id.navview);
+        final NavigationView navView = (NavigationView) findViewById(R.id.navview);
         navView.setCheckedItem(R.id.menu_seccion_1);
 
         boolean fragmentTransaction = false;
@@ -51,6 +52,8 @@ public class Principal extends AppCompatActivity implements iPrincipal{
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
 
+                        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(navView.getWindowToken(), 0);
                         boolean fragmentTransaction = false;
                         Fragment fragment = null;
 
