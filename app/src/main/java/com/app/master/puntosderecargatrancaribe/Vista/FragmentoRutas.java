@@ -42,6 +42,10 @@ import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.Ru
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RespuestaRutaCorta;
 import com.app.master.puntosderecargatrancaribe.R;
 import com.app.master.puntosderecargatrancaribe.Vista.Adaptadores.AdaptadorReciclerViewRuta;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.InterstitialAd;
+import com.facebook.ads.InterstitialAdListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -110,12 +114,46 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     private ArrayList<ParaderoBuscador>paraderosFirebase;
     private ArrayList<String> busqueda;
 
+    private InterstitialAd interstitialAd;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         vista = inflater.inflate(R.layout.fragment_rutas, container, false);
 
+        interstitialAd=new InterstitialAd(getContext(),"133411673871431_176478619564736");
+        interstitialAd.setAdListener(new InterstitialAdListener() {
+            @Override
+            public void onInterstitialDisplayed(Ad ad) {
+
+            }
+
+            @Override
+            public void onInterstitialDismissed(Ad ad) {
+
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                //Toast.makeText(getContext(), "Error del baner", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                interstitialAd.show();
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+
+            }
+        });
         contador = 0;
         paraderos = datosParadero();
         paraderoSegundarios = datosParaderoSegundario();
@@ -254,10 +292,10 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
             int destinoPosicion = (int) paraderoDestino.getPosicion();
             //rutaBusParaderos = new ArrayList();
             //rutaVenidaeIda(paraderoOrigen, paraderoDestino);
-
             if (origenPosicion == destinoPosicion) {
                 rutaBusParaderos = new ArrayList();
                 rutaVenidaeIda(paraderoOrigen, paraderoDestino);
+
 
             } else {
                 rutaBusParaderos = new ArrayList();
@@ -371,16 +409,20 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     }
 
     public void rutaVenidaeIda(ParaderoBuscador origen, ParaderoBuscador destino) {
-        if (destino.getPosicion() > origen.getPosicion()) {
-            //Toast.makeText(getContext(), "entre", Toast.LENGTH_SHORT).show();
-            rutaCercana(origen, destino);
+        try {
+            if (destino.getPosicion() > origen.getPosicion()) {
+                //Toast.makeText(getContext(), "entre", Toast.LENGTH_SHORT).show();
+                rutaCercana(origen, destino);
 
-        } else if (destino.getPosicion() < origen.getPosicion()) {
-            double origenes = origen.getPosicion();
-            //origen.setPosicion(-1*origenes);
-            convertirPosicionParaderosNegativo();
-            //Toast.makeText(getContext(),"el origen es: "+ String.valueOf(origen.getPosicion())+ " el destino es: "+String.valueOf(destino.getPosicion()), Toast.LENGTH_SHORT).show();
-            rutaCercana(origen, destino);
+            } else if (destino.getPosicion() < origen.getPosicion()) {
+                double origenes = origen.getPosicion();
+                //origen.setPosicion(-1*origenes);
+                convertirPosicionParaderosNegativo();
+                //Toast.makeText(getContext(),"el origen es: "+ String.valueOf(origen.getPosicion())+ " el destino es: "+String.valueOf(destino.getPosicion()), Toast.LENGTH_SHORT).show();
+                rutaCercana(origen, destino);
+
+            }
+        }catch (Exception e){
 
         }
     }
@@ -424,10 +466,9 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
         ArrayList<Bus> busesAlimentador3Castellana = new ArrayList();
         //buses de la castellana
-        busesAlimentador3Castellana.add(new Bus("t106", "Variante"));
+        busesAlimentador3Castellana.add(new Bus("t101", "Variante"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador3Castellana, "sanjose", "Paradero frente sanjose", "san jose,barrio", 10.380177949925699,-75.46380371123809, 1.3,
-                "segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador3Castellana, "sanjose", "Paradero frente sanjose", "san jose,barrio", 10.580177949925699,-75.56380371123809, 3.3,"segundario"));
 
         return paraderoSegundarios;
     }
@@ -583,9 +624,9 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         }
         if (obtenerBusesParaAbordar(origen, destino).size() == 0) {
 
-            Toast.makeText(getContext(), "Rutas alternativas", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "Rutas alternativas", Toast.LENGTH_SHORT).show();
             //Toast.makeText(getContext(), paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
-            rutaTransbordo();
+           // rutaTransbordo();
         }
 
         return false;
@@ -810,6 +851,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         if (buscadorParaderoDestino(autoCompletador.getText().toString())) {
+            interstitialAd.loadAd();
             determinarRuta();
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(), obtenerrutas()));
@@ -1058,6 +1100,9 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     }
     @Override
     public void onDestroy() {
+        if (interstitialAd != null) {
+            interstitialAd.destroy();
+        }
         super.onDestroy();
         apiClient.stopAutoManage(getActivity());
         apiClient.disconnect();

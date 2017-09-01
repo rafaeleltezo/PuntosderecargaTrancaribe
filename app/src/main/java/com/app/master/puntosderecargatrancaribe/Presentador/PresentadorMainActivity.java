@@ -52,7 +52,9 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
     public PresentadorMainActivity(Context context, iMapsActivity activity) {
         this.context = context;
         this.activity = activity;
-        agregarPuntoRecarga();
+        //agregarPuntoRecarga();
+        tareaFirebase tareaFirebase=new tareaFirebase();
+        tareaFirebase.execute();
         progreso=new ProgressDialog(context);
 
     }
@@ -261,6 +263,15 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
         }*/
 
 
+    }
+
+    private class  tareaFirebase extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            agregarPuntoRecarga();
+            return null;
+        }
     }
 
     private class TareaAsincronaMejorRuta extends AsyncTask<Void, Void, Void> {
