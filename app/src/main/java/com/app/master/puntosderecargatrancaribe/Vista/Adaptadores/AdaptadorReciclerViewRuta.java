@@ -42,7 +42,7 @@ public class AdaptadorReciclerViewRuta extends RecyclerView.Adapter<AdaptadorRec
         if(rutaBusParaderos.size()==position+1){
             holder.nombreBus.setText("Bajate en "+ruta.getNombreBus());
             holder.nombreEstacion.setText("En el "+ruta.getParaderoBuscador().getDescripcion());
-        }else {
+        }else if(rutaBusParaderos.size()>position){
             holder.nombreBus.setText("Aborda "+ruta.getNombreBus());
             holder.nombreEstacion.setText("En el "+ruta.getParaderoBuscador().getDescripcion());
         }
