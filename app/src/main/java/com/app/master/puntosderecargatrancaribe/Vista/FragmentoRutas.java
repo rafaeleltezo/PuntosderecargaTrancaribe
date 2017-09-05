@@ -40,6 +40,7 @@ import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.Pa
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.ParaderoDistancia;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.ModeloBuscador.RutaBusParadero;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.RespuestaRutaCorta;
+import com.app.master.puntosderecargatrancaribe.Presentador.GpsUtil;
 import com.app.master.puntosderecargatrancaribe.R;
 import com.app.master.puntosderecargatrancaribe.Vista.Adaptadores.AdaptadorReciclerViewRuta;
 import com.facebook.ads.Ad;
@@ -88,8 +89,8 @@ import retrofit2.Response;
 import static com.google.ads.AdRequest.LOGTAG;
 
 
-public class FragmentoRutas extends Fragment implements View.OnClickListener,
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,LocationListener,OnMapReadyCallback {
+public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks*/,LocationListener,OnMapReadyCallback {
 
     private static final int PETICION_PERMISO_LOCALIZACION = 2 ;
     private static final int PETICION_CONFIG_UBICACION=12;
@@ -136,7 +137,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
             @Override
             public void onError(Ad ad, AdError adError) {
-                //Toast.makeText(getContext(), "Error del baner", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error del baner", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -885,8 +886,13 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         paraderos();
+        GpsUtil gps=new GpsUtil(getContext(),getActivity());
+        apiClient= gps.Inicializaapi(getActivity());
+
+        enableLocationUpdates();
+        /*try {
         if (apiClient == null || !apiClient.isConnected()) {
-            try {
+
                 apiClient = new GoogleApiClient.Builder(getContext())
                         .enableAutoManage(getActivity(), this)
                         .addConnectionCallbacks(this)
@@ -894,12 +900,31 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
                         .build();
 
 
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             enableLocationUpdates();
+            }
+
+            catch (Exception e) {
+            e.printStackTrace();
+
+        }*/
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (apiClient != null)
+            apiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (apiClient != null && apiClient.isConnected()) {
+            apiClient.stopAutoManage(getActivity());
+            apiClient.disconnect();
         }
     }
+
 
 
     //Localizacion
@@ -950,7 +975,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
         return false;
     }
-
+/*
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(getContext(), "Error al conectarse a los servicios de google", Toast.LENGTH_SHORT).show();
@@ -958,7 +983,6 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
 
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -973,13 +997,14 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
 
             updateUI(lastLocation);
         }
+
     }
 
     @Override
     public void onConnectionSuspended(int i) {
 
     }
-
+*/
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PETICION_PERMISO_LOCALIZACION) {
@@ -1012,6 +1037,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
             }
         }
     }
+
     private void enableLocationUpdates() {
 
         locRequest = new LocationRequest();
@@ -1098,14 +1124,19 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         //Mostramos la nueva ubicación recibida
         updateUI(location);
     }
+
     @Override
     public void onDestroy() {
         if (interstitialAd != null) {
             interstitialAd.destroy();
         }
+
         super.onDestroy();
-        apiClient.stopAutoManage(getActivity());
-        apiClient.disconnect();
+        if (apiClient != null && apiClient.isConnected()) {
+            apiClient.stopAutoManage(getActivity());
+            apiClient.disconnect();
+        }
+
     }
 
     @Override
@@ -1132,6 +1163,22 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener,
         mMap.setMinZoomPreference(10f);
         mMap.setMaxZoomPreference(18f);
         agregarLimitesMapa();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            mMap.setMyLocationEnabled(true);
+        }
+        catch (Exception e){
+
+        }
     }
 
     public void agregarLimitesMapa() {

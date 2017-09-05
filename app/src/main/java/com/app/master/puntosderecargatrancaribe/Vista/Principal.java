@@ -10,10 +10,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.app.master.puntosderecargatrancaribe.Presentador.iPresentadorPrincipal;
 import com.app.master.puntosderecargatrancaribe.R;
 import com.app.master.puntosderecargatrancaribe.Vista.Adaptadores.AdaptadorViewPagerPrincipal;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 
@@ -22,6 +24,7 @@ public class Principal extends AppCompatActivity implements iPrincipal{
     private ViewPager viewPager;
     private iPresentadorPrincipal presentador;
     private DrawerLayout drawerLayout;
+    private GoogleApiClient apiClient;
 
 
     @Override
@@ -57,13 +60,23 @@ public class Principal extends AppCompatActivity implements iPrincipal{
                         boolean fragmentTransaction = false;
                         Fragment fragment = null;
 
+
                         switch (menuItem.getItemId()) {
                             case R.id.menu_seccion_1:
                                 fragment = new FragmentoRutas();
+                                if (apiClient != null && apiClient.isConnected()) {
+                                    Toast.makeText(Principal.this, "entre", Toast.LENGTH_SHORT).show();
+                                    apiClient.stopAutoManage(fragment.getActivity());
+                                    apiClient.disconnect();
+                                }
                                 fragmentTransaction = true;
                                 break;
                             case R.id.menu_seccion_2:
                                 fragment=new FragmentMapaPuntoRecarga();
+                                if (apiClient != null && apiClient.isConnected()) {
+                                    apiClient.stopAutoManage(fragment.getActivity());
+                                    apiClient.disconnect();
+                                }
                                 fragmentTransaction = true;
                                 break;
                         }

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.app.master.puntosderecargatrancaribe.MapsActivity;
 import com.app.master.puntosderecargatrancaribe.Modelo.RestApi.Coordenadas;
+import com.app.master.puntosderecargatrancaribe.Presentador.GpsUtil;
 import com.app.master.puntosderecargatrancaribe.Presentador.PresentadorMainActivity;
 import com.app.master.puntosderecargatrancaribe.Presentador.iPresentadorMainActivity;
 import com.app.master.puntosderecargatrancaribe.R;
@@ -65,32 +66,45 @@ import static com.google.ads.AdRequest.LOGTAG;
  */
 
 public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity, OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener,
-        View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener{
+        /*GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,*/ LocationListener,
+        View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient apiClient;
-    private int PETICION_PERMISO_LOCALIZACION = 1;
-    private int PETICION_CONFIG_UBICACION = 2;
+    private int PETICION_PERMISO_LOCALIZACION = 12;
+    private int PETICION_CONFIG_UBICACION = 23;
     private LocationRequest locRequest;
     private Location lastLocation;
     private LatLng locationMarcador;
     private Location location;
     private iPresentadorMainActivity presentador;
-    private FloatingActionButton boton,botonLimpiar;
+    private FloatingActionButton boton, botonLimpiar;
     private Button rutaCercana;
     private Polyline polyline;
     private AdView adView;
     private AdRequest adRequest;
-    MapView mapView;
-    View vista;
+    private MapView mapView;
+    private View vista;
+    private GpsUtil gps;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            presentador = new PresentadorMainActivity(getActivity(), this);
+            gps = new GpsUtil(getContext(), getActivity());
+            apiClient = gps.Inicializaapi(getActivity());
+            actuliazarUbicacion();
+            enableLocationUpdates();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+
+        /*try {
         presentador = new PresentadorMainActivity(getActivity(), this);
-        if(apiClient == null || !apiClient.isConnected()){
-            try {
+        if (apiClient == null || !apiClient.isConnected()) {
+
                 apiClient = new GoogleApiClient.Builder(getContext())
                         .enableAutoManage(getActivity(), this)
                         .addConnectionCallbacks(this)
@@ -98,28 +112,49 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
                         .build();
 
 
-            } catch (Exception e) {
-                e.printStackTrace();
+
             }
             enableLocationUpdates();
-        }
+            }catch (Exception e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
 
+        }
+*/
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (apiClient != null)
+            apiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (apiClient != null && apiClient.isConnected()) {
+            apiClient.stopAutoManage(getActivity());
+            apiClient.disconnect();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        apiClient.stopAutoManage(getActivity());
-        apiClient.disconnect();
+        if (apiClient != null && apiClient.isConnected()) {
+            apiClient.stopAutoManage(getActivity());
+            apiClient.disconnect();
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        vista= inflater.inflate(R.layout.maparecarga,container,false);
+        vista = inflater.inflate(R.layout.maparecarga, container, false);
         boton = (FloatingActionButton) vista.findViewById(R.id.botonNormalFragment);
-        rutaCercana=(Button)vista.findViewById(R.id.rutaCercanaFragment);
-        botonLimpiar=(FloatingActionButton) vista.findViewById(R.id.botonLimpiarFragment);
+        rutaCercana = (Button) vista.findViewById(R.id.rutaCercanaFragment);
+        botonLimpiar = (FloatingActionButton) vista.findViewById(R.id.botonLimpiarFragment);
         botonLimpiar.setVisibility(View.INVISIBLE);
         botonLimpiar.setOnClickListener(this);
         boton.setOnClickListener(this);
@@ -135,8 +170,8 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mapView=(MapView) vista.findViewById(R.id.mapa);
-        if(mapView!=null){
+        mapView = (MapView) vista.findViewById(R.id.mapa);
+        if (mapView != null) {
             mapView.onCreate(null);
             mapView.onResume();
             mapView.getMapAsync(this);
@@ -165,6 +200,22 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
         presentador.agregarLimitesMapa();
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerClickListener(this);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            mMap.setMyLocationEnabled(true);
+        }
+        catch (Exception e){
+
+        }
     }
 
     @Override
@@ -224,11 +275,9 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
         try {
             Marker marcador = mMap.addMarker(new MarkerOptions().position(new LatLng(latitud, longitud)).title(nombre).snippet(descripcion));
             marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.punto_recarga));
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             presentador.agregarPuntoRecarga();
         }
-
-
 
 
     }
@@ -252,7 +301,7 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 //Permiso concedido
-                presentador.agregarPuntoRecarga();
+                //presentador.agregarPuntoRecarga();
                 @SuppressWarnings("MissingPermission")
                 Location lastLocation =
                         LocationServices.FusedLocationApi.getLastLocation(apiClient);
@@ -269,6 +318,7 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
+
 
             } else {
                 //Permiso denegado:
@@ -296,48 +346,66 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
             Toast.makeText(getContext(), "longitud desconocida", Toast.LENGTH_SHORT).show();
         }
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getContext(), "Error al conectarse a los servicios de google play", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        // Toast.makeText(this, "Conexion Exitosa", Toast.LENGTH_SHORT).show();
-
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PETICION_PERMISO_LOCALIZACION);
-        } else {
-
-            lastLocation =LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            try {
-                CameraPosition cameraPosition;
-                cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                        .zoom(14)
-                        .bearing(0)
-                        .tilt(0)
-                        .build();
-                CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                mMap.animateCamera(camara);
-            }catch (Exception e){
-                Log.d("Error de latitud","Null point");
-            }
-            updateUI(lastLocation);
+    private void actuliazarUbicacion(){
+        Location loca=GpsUtil.getLocation();
+        updateUI(loca);
+        try {
+            CameraPosition cameraPosition;
+            cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(loca.getLatitude(), loca.getLongitude()))
+                    .zoom(14)
+                    .bearing(0)
+                    .tilt(0)
+                    .build();
+            CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mMap.animateCamera(camara);
+        }catch (Exception e){
+            Log.d("Error de latitud","Null point");
         }
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Toast.makeText(getContext(), "Servicios de google play suspendidos", Toast.LENGTH_SHORT).show();
-    }
+    /*
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Toast.makeText(getContext(), "Error al conectarse a los servicios de google play", Toast.LENGTH_SHORT).show();
 
+        }
+
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            // Toast.makeText(this, "Conexion Exitosa", Toast.LENGTH_SHORT).show();
+
+            if (ActivityCompat.checkSelfPermission(getContext(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        PETICION_PERMISO_LOCALIZACION);
+            } else {
+
+                lastLocation =LocationServices.FusedLocationApi.getLastLocation(apiClient);
+                try {
+                    CameraPosition cameraPosition;
+                    cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                            .zoom(14)
+                            .bearing(0)
+                            .tilt(0)
+                            .build();
+                    CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                    mMap.animateCamera(camara);
+                }catch (Exception e){
+                    Log.d("Error de latitud","Null point");
+                }
+                updateUI(lastLocation);
+            }
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Toast.makeText(getContext(), "Servicios de google play suspendidos", Toast.LENGTH_SHORT).show();
+        }
+    */
     public void enableLocationUpdates() {
 
         locRequest = new LocationRequest();
@@ -349,6 +417,7 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
                 new LocationSettingsRequest.Builder()
                         .addLocationRequest(locRequest)
                         .build();
+
 
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(
@@ -406,7 +475,19 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
         //Toast.makeText(this, "Recibiendo localizacion", Toast.LENGTH_SHORT).show();
 
         //Mostramos la nueva ubicación recibida
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        //mMap.setMyLocationEnabled(true);
         updateUI(location);
+
     }
 
 
