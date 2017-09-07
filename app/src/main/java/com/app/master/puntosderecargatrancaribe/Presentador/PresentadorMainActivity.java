@@ -53,39 +53,51 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
         this.context = context;
         this.activity = activity;
         //agregarPuntoRecarga();
-        tareaFirebase tareaFirebase=new tareaFirebase();
-        tareaFirebase.execute();
+        agregarPuntoRecarga();
         progreso=new ProgressDialog(context);
 
     }
 
+    @Override
     public void agregarPuntoRecarga() {
-        if (activity.verificarInternet()) {
-            coordenadasParaderos = new ArrayList();
-            database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference(FirebaseReferences.referencia_recarga);
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    for (DataSnapshot dato : dataSnapshot.getChildren()) {
-                        Paradero paradero = dato.getValue(Paradero.class);
-                        activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre(), paradero.getDescripcion());
-                        coordenadasParaderos.add(paradero);
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(context, "Error en el servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
+        if(activity.verificarInternet()) {
+            tareaFirebase tareaFirebase = new tareaFirebase();
+            tareaFirebase.execute();
+        }else{
+            Toast.makeText(context, "Error al conectar al servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
+    /*
+        public void agregarPuntoRecarga() {
+            if (activity.verificarInternet()) {
+                coordenadasParaderos = new ArrayList();
+                database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference(FirebaseReferences.referencia_recarga);
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot dato : dataSnapshot.getChildren()) {
+                            Paradero paradero = dato.getValue(Paradero.class);
+                            activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre(), paradero.getDescripcion());
+                            coordenadasParaderos.add(paradero);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(context, "Error en el servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
+            }
+        }
+    */
     @Override
     public void agregarLimitesMapa() {
         activity.establecerLimitesMapa();
@@ -192,6 +204,9 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
         }*/
         if (activity.verificarInternet()) {
+            try {
+
+
             progreso.setTitle("Iniciando ruta");
             progreso.setMessage("Dibujando aproximacion de ruta ");
             progreso.setCancelable(true);
@@ -206,10 +221,18 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 String longitudRecarga = df.format(paraderos.getLongitud());
                 if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
                     coordenadasPuntoRecarga.add(paraderos);
+
                     TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(coordenadasPuntoRecarga);
                     tarea.execute();
                 }
 
+            }
+            }catch (NullPointerException e){
+                Toast.makeText(context, "Active el Gps para determinar la ruta", Toast.LENGTH_SHORT).show();
+                progreso.dismiss();
+            }catch (Exception e){
+                Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show();
+                progreso.dismiss();
             }
 
         } else {
@@ -269,7 +292,31 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            agregarPuntoRecarga();
+            //agregarPuntoRecarga();
+            if (activity.verificarInternet()) {
+                coordenadasParaderos = new ArrayList();
+                database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference(FirebaseReferences.referencia_recarga);
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot dato : dataSnapshot.getChildren()) {
+                            Paradero paradero = dato.getValue(Paradero.class);
+                            activity.AgregarPuntosRecarga(paradero.getLatitud(), paradero.getLongitud(), paradero.getNombre(), paradero.getDescripcion());
+                            coordenadasParaderos.add(paradero);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(context, "Error en el servidor, intente mas tarde", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
+            }
             return null;
         }
     }

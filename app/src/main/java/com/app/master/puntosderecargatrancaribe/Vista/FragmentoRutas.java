@@ -90,10 +90,10 @@ import static com.google.ads.AdRequest.LOGTAG;
 
 
 public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks*/,LocationListener,OnMapReadyCallback {
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks*/, LocationListener, OnMapReadyCallback {
 
-    private static final int PETICION_PERMISO_LOCALIZACION = 2 ;
-    private static final int PETICION_CONFIG_UBICACION=12;
+    private static final int PETICION_PERMISO_LOCALIZACION = 2;
+    private static final int PETICION_CONFIG_UBICACION = 12;
     private View vista;
     private ParaderoBuscador paraderoOrigen;
     private ParaderoBuscador paraderoDestino;
@@ -112,7 +112,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
     private GoogleApiClient apiClient;
     private MapView mapView;
     private FirebaseDatabase database;
-    private ArrayList<ParaderoBuscador>paraderosFirebase;
+    private ArrayList<ParaderoBuscador> paraderosFirebase;
     private ArrayList<String> busqueda;
 
     private InterstitialAd interstitialAd;
@@ -123,7 +123,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
         vista = inflater.inflate(R.layout.fragment_rutas, container, false);
 
-        interstitialAd=new InterstitialAd(getContext(),"133411673871431_176478619564736");
+        interstitialAd = new InterstitialAd(getContext(), "133411673871431_176478619564736");
         interstitialAd.setAdListener(new InterstitialAdListener() {
             @Override
             public void onInterstitialDisplayed(Ad ad) {
@@ -166,10 +166,10 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
             //busqueda.add(descomponerpalabra(p.getPalabrasClaves()));
         }*/
         for (ParaderoBuscador p : paraderoSegundarios) {
-            for (String palabras:descomponerPalabra(p.getPalabrasClaves())) {
+            for (String palabras : descomponerPalabra(p.getPalabrasClaves())) {
                 busqueda.add(palabras);
             }
-           // busqueda.add(descomponerpalabra(p.getPalabrasClaves()));
+            // busqueda.add(descomponerpalabra(p.getPalabrasClaves()));
         }
         recyclerView = (RecyclerView) vista.findViewById(R.id.recycler);
         autoCompletador = (AutoCompleteTextView) vista.findViewById(R.id.buscarDestino);
@@ -256,10 +256,10 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
                 for (DataSnapshot dato : dataSnapshot.getChildren()) {
                     ParaderoBuscador paraderoBuscador = dato.getValue(ParaderoBuscador.class);
                     paraderosFirebase.add(paraderoBuscador);
-                    for (String palabras:descomponerPalabra(paraderoBuscador.getPalabrasClaves())) {
+                    for (String palabras : descomponerPalabra(paraderoBuscador.getPalabrasClaves())) {
                         busqueda.add(palabras);
                     }
-                   // busqueda.add(descomponerpalabra(paraderoBuscador.getPalabrasClaves()));
+                    // busqueda.add(descomponerpalabra(paraderoBuscador.getPalabrasClaves()));
                 }
 
             }
@@ -276,7 +276,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
     public ArrayList<String> descomponerpalabra(String palabra) {
         String[] palabras = palabra.split(",");
-        ArrayList<String>palabrasclave=new ArrayList();
+        ArrayList<String> palabrasclave = new ArrayList();
         for (String palabrasc : palabras) {
             String sinEspacio = palabrasc.trim();
             palabrasclave.add(sinEspacio);
@@ -423,7 +423,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
                 rutaCercana(origen, destino);
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -456,20 +456,20 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
         busesAlimentador1Castellana.add(new Bus("t106", "Variante"));
         //busesAlimentador1Castellana.add(new Bus("t1018","Bocagrande"));
         // busesAlimentador1Castellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador1Castellana, "bomba el amparo", "Paradero frente bomba el amparo", "bomba el amparo,cai bomba el amparo,", 10.3807949925699,-75.46381123809, 1.1, "segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador1Castellana, "bomba el amparo", "Paradero frente bomba el amparo", "bomba el amparo,cai bomba el amparo,", 10.3807949925699, -75.46381123809, 1.1, "segundario"));
 
         ArrayList<Bus> busesAlimentador2Castellana = new ArrayList();
         //buses de la castellana
         busesAlimentador2Castellana.add(new Bus("t106", "Variante"));
         // busesAlimentador2Castellana.add(new Bus("t1031","Bocagrande"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador2Castellana, "sao", "Paradero frente sao", "sao,prueba", 10.380177949925,-75.46380371129, 1.2, "segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador2Castellana, "sao", "Paradero frente sao", "sao,prueba", 10.380177949925, -75.46380371129, 1.2, "segundario"));
 
         ArrayList<Bus> busesAlimentador3Castellana = new ArrayList();
         //buses de la castellana
         busesAlimentador3Castellana.add(new Bus("t101", "Variante"));
         //busesCastellana.add(new Bus("xt101","Todas las paradas"));
-        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador3Castellana, "sanjose", "Paradero frente sanjose", "san jose,barrio", 10.580177949925699,-75.56380371123809, 3.3,"segundario"));
+        paraderoSegundarios.add(new ParaderoBuscador(busesAlimentador3Castellana, "sanjose", "Paradero frente sanjose", "san jose,barrio", 10.580177949925699, -75.56380371123809, 3.3, "segundario"));
 
         return paraderoSegundarios;
     }
@@ -477,8 +477,8 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
     //datos entrantes
     public ArrayList<ParaderoBuscador> datosParadero() {
         paraderos = new ArrayList();
-        for (ParaderoBuscador p:paraderosFirebase){
-            if(p.getTipo().equals("principal")){
+        for (ParaderoBuscador p : paraderosFirebase) {
+            if (p.getTipo().equals("principal")) {
                 //Toast.makeText(getContext(), String.valueOf(p.getBus().size()), Toast.LENGTH_SHORT).show();
                 paraderos.add(p);
             }
@@ -627,7 +627,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
             //Toast.makeText(getContext(), "Rutas alternativas", Toast.LENGTH_SHORT).show();
             //Toast.makeText(getContext(), paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
-           // rutaTransbordo();
+            // rutaTransbordo();
         }
 
         return false;
@@ -851,32 +851,36 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
     @Override
     public void onClick(View v) {
-        if (buscadorParaderoDestino(autoCompletador.getText().toString())) {
-            interstitialAd.loadAd();
-            determinarRuta();
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(), obtenerrutas()));
-            InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(botonIr.getWindowToken(), 0);
-            mMap.clear();
-            ArrayList<ParaderoBuscador>paraderoB=new ArrayList();
-            paraderoB.add(paraderoOrigen);
-            for (RutaBusParadero s:obtenerrutas()) {
-                paraderoB.add(s.getParaderoBuscador());
-            }
-            paraderoB.add(paraderoDestino);
-            mostrarRutaEnMapa(paraderoB);
+        if (verificarInternet()) {
 
+            if (buscadorParaderoDestino(autoCompletador.getText().toString())) {
+                interstitialAd.loadAd();
+                determinarRuta();
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(), obtenerrutas()));
+                InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(botonIr.getWindowToken(), 0);
+                mMap.clear();
+                ArrayList<ParaderoBuscador> paraderoB = new ArrayList();
+                paraderoB.add(paraderoOrigen);
+                for (RutaBusParadero s : obtenerrutas()) {
+                    paraderoB.add(s.getParaderoBuscador());
+                }
+                paraderoB.add(paraderoDestino);
+                mostrarRutaEnMapa(paraderoB);
+            } else {
+                Toast.makeText(getContext(), "No hay paraderos cercanos", Toast.LENGTH_SHORT).show();
+            }
 
         } else {
-            Toast.makeText(getContext(), "No hay paraderos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No hay conexion a internet", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void mostrarRutaEnMapa(ArrayList<ParaderoBuscador> paradas){
+    public void mostrarRutaEnMapa(ArrayList<ParaderoBuscador> paradas) {
 
-        for (ParaderoBuscador p:paradas) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLatitud(),p.getLongitud())).title(" "+p.getNombre()).snippet(p.getDescripcion()).icon(BitmapDescriptorFactory.fromResource(R.drawable.parada_de_autobus)));
+        for (ParaderoBuscador p : paradas) {
+            mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLatitud(), p.getLongitud())).title(" " + p.getNombre()).snippet(p.getDescripcion()).icon(BitmapDescriptorFactory.fromResource(R.drawable.parada_de_autobus)));
 
         }
 
@@ -886,10 +890,27 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         paraderos();
-        GpsUtil gps=new GpsUtil(getContext(),getActivity());
-        apiClient= gps.Inicializaapi(getActivity());
-
+        GpsUtil gps = new GpsUtil(getContext(), getActivity());
+        apiClient = gps.Inicializaapi(getActivity());
         enableLocationUpdates();
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location lastLocation =
+                LocationServices.FusedLocationApi.getLastLocation(apiClient);
+
+        updateUI(lastLocation);
+
+
+
+
         /*try {
         if (apiClient == null || !apiClient.isConnected()) {
 
@@ -1005,38 +1026,6 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
     }
 */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PETICION_PERMISO_LOCALIZACION) {
-            if (grantResults.length == 1
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                //Permiso concedido
-                @SuppressWarnings("MissingPermission")
-                Location lastLocation =
-                        LocationServices.FusedLocationApi.getLastLocation(apiClient);
-
-                updateUI(lastLocation);
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                mMap.setMyLocationEnabled(true);
-
-            } else {
-                //Permiso denegado:
-                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
-
-                Toast.makeText(getContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     private void enableLocationUpdates() {
 

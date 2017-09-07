@@ -1,10 +1,18 @@
 package com.app.master.puntosderecargatrancaribe.Vista;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +33,9 @@ public class Principal extends AppCompatActivity implements iPrincipal{
     private iPresentadorPrincipal presentador;
     private DrawerLayout drawerLayout;
     private GoogleApiClient apiClient;
+    private NavigationView navView;
+
+
 
 
     @Override
@@ -35,8 +46,9 @@ public class Principal extends AppCompatActivity implements iPrincipal{
         //viewPager=(ViewPager)findViewById(R.id.viewpager);
         //presentador=new PresentadorPrincipal(this,this);
         //presentador.iniciarViewPager();
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final NavigationView navView = (NavigationView) findViewById(R.id.navview);
+        navView = (NavigationView) findViewById(R.id.navview);
         navView.setCheckedItem(R.id.menu_seccion_1);
 
         boolean fragmentTransaction = false;
@@ -64,19 +76,10 @@ public class Principal extends AppCompatActivity implements iPrincipal{
                         switch (menuItem.getItemId()) {
                             case R.id.menu_seccion_1:
                                 fragment = new FragmentoRutas();
-                                if (apiClient != null && apiClient.isConnected()) {
-                                    Toast.makeText(Principal.this, "entre", Toast.LENGTH_SHORT).show();
-                                    apiClient.stopAutoManage(fragment.getActivity());
-                                    apiClient.disconnect();
-                                }
                                 fragmentTransaction = true;
                                 break;
                             case R.id.menu_seccion_2:
                                 fragment=new FragmentMapaPuntoRecarga();
-                                if (apiClient != null && apiClient.isConnected()) {
-                                    apiClient.stopAutoManage(fragment.getActivity());
-                                    apiClient.disconnect();
-                                }
                                 fragmentTransaction = true;
                                 break;
                         }

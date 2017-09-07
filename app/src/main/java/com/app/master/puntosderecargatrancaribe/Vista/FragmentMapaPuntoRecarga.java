@@ -436,7 +436,7 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
 
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         try {
-                            Log.i(LOGTAG, "Se requiere actuación del usuario");
+                            Toast.makeText(getContext(), "Active GPS para ubicar paraderos cercanos", Toast.LENGTH_SHORT).show();
                             status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
                         } catch (IntentSender.SendIntentException e) {
                             Toast.makeText(getContext(), "Error al intentar solucionar configuración de ubicación", Toast.LENGTH_SHORT).show();
@@ -497,10 +497,14 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
             presentador.obtenerRutaMapa();
         }
         if(v.getId()==botonLimpiar.getId()){
-            mMap.clear();
-            presentador.agregarPuntoRecarga();
-            Toast.makeText(getContext(), "Eliminanda", Toast.LENGTH_SHORT).show();
-            botonLimpiar.setVisibility(View.INVISIBLE);
+            try {
+                mMap.clear();
+                presentador.agregarPuntoRecarga();
+                Toast.makeText(getContext(), "Eliminanda", Toast.LENGTH_SHORT).show();
+                botonLimpiar.setVisibility(View.INVISIBLE);
+            }catch (Exception e){
+
+            }
         }
         if(v.getId()==rutaCercana.getId()){
             presentador.dibujarRutaCortaMapa();
