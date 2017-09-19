@@ -308,8 +308,8 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
                 @SuppressWarnings("MissingPermission")
                 Location lastLocation =
                         LocationServices.FusedLocationApi.getLastLocation(apiClient);
-
                 updateUI(lastLocation);
+
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -339,8 +339,18 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
     public void updateUI(Location loc) {
         if (loc != null) {
             setLocation(loc);
-            // Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLatitude()), Toast.LENGTH_SHORT).show();
-            // Toast.makeText(this, "Latitud: " + String.valueOf(loc.getLongitude()), Toast.LENGTH_SHORT).show();
+             //Toast.makeText(getContext(), "Latitud: " + String.valueOf(loc.getLatitude()), Toast.LENGTH_SHORT).show();
+             //Toast.makeText(getContext(), "Latitud: " + String.valueOf(loc.getLongitude()), Toast.LENGTH_SHORT).show();
+            Log.d("localizacion",String.valueOf(loc.getLatitude()));
+                CameraPosition cameraPosition;
+                cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(loc.getLatitude(), loc.getLongitude()))
+                        .zoom(14)
+                        .bearing(0)
+                        .tilt(0)
+                        .build();
+                CameraUpdate camara = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                mMap.animateCamera(camara);
             LatLng posicion = new LatLng(loc.getLatitude(), loc.getLongitude());
 
 
@@ -412,8 +422,8 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
     public void enableLocationUpdates() {
 
         locRequest = new LocationRequest();
-        locRequest.setInterval(2000);
-        locRequest.setFastestInterval(1000);
+        locRequest.setInterval(60000);
+        locRequest.setFastestInterval(30000);
         locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest locSettingsRequest =
@@ -532,8 +542,8 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
 
         @Override
         protected Void doInBackground(Void... params) {
-            actuliazarUbicacion();
             enableLocationUpdates();
+            //actuliazarUbicacion();
             return null;
         }
     }

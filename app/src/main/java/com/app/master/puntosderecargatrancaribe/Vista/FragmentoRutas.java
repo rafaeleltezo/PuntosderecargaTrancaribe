@@ -1114,10 +1114,14 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
             //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
             //Sería recomendable implementar la posible petición en caso de no tenerlo.
             //Toast.makeText(this, "Inicio de recepción de ubicaciones", Toast.LENGTH_SHORT).show();
-
+        try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     apiClient, locRequest, this);
             mMap.setMyLocationEnabled(true);
+        }catch (Exception e){
+
+        }
+
 
         }
     }

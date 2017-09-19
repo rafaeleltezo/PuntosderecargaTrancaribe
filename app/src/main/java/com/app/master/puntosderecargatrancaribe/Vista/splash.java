@@ -39,13 +39,13 @@ public class splash extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        Toast.makeText(this, String.valueOf(requestCode), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, String.valueOf(requestCode), Toast.LENGTH_SHORT).show();
         switch (requestCode) {
             case PETICION_PERMISO_LOCALIZACION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Exelente", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "Exelente", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, Principal.class);
                     startActivity(intent);
                     finish();

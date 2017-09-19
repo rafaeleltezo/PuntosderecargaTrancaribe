@@ -203,51 +203,24 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
             });
 
         }*/
-        if (activity.verificarInternet()) {
-            try {
-
-
-            progreso.setTitle("Iniciando ruta");
-            progreso.setMessage("Dibujando aproximacion de ruta ");
-            progreso.setCancelable(true);
-            progreso.show();
-            DecimalFormat df = new DecimalFormat("#.00");
-            String latitulMiPosicion = df.format(activity.getLocation().getLatitude());
-            String longitudlMiPosicion = df.format(activity.getLocation().getLongitude());
-            ArrayList<Paradero> coordenadasPuntoRecarga = new ArrayList();
-            for (Paradero paraderos : coordenadasParaderos) {
-                df = new DecimalFormat("#.00");
-                String latitudRecarga = df.format(paraderos.getLatitud());
-                String longitudRecarga = df.format(paraderos.getLongitud());
-                if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
-                    coordenadasPuntoRecarga.add(paraderos);
-                    for (Paradero p:coordenadasPuntoRecarga) {
-                        TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(p);
-                        tarea.execute();
-
-                    }
-
-                }
-
             }
-            }catch (NullPointerException e){
-                Toast.makeText(context, "Active el Gps para determinar la ruta", Toast.LENGTH_SHORT).show();
-                progreso.dismiss();
-            }catch (Exception e){
-                Toast.makeText(context, "Error desconocido", Toast.LENGTH_SHORT).show();
-                progreso.dismiss();
-            }
-
-        } else {
-            Toast.makeText(context, "No esta conectado a internet", Toast.LENGTH_LONG).show();
-
-        }
-    }
 
     @Override
     public void dibujarRutaCortaMapa() {
 
-        obtenerutaCercana();
+        if(activity.verificarInternet()) {
+            try {
+                progreso=new ProgressDialog(context);
+                progreso.setTitle("Iniciando ruta");
+                progreso.setMessage("Dibujando aproximacion de ruta ");
+                progreso.setCancelable(true);
+                progreso.show();
+                obtenerutaCercana o = new obtenerutaCercana();
+                o.execute();
+            }catch (Exception e){
+                Toast.makeText(context, "Solicite mas tarde ", Toast.LENGTH_SHORT).show();
+            }
+        }
         /*
         final ProgressDialog progreso=new ProgressDialog(context);
         progreso.setTitle("Iniciando ruta");
@@ -324,10 +297,46 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
         }
     }
 
+    private class obtenerutaCercana extends AsyncTask<Void,Void,Void>{
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d("entre","localizacion");
+            DecimalFormat df = new DecimalFormat("#.00");
+            String latitulMiPosicion = df.format(activity.getLocation().getLatitude());
+            String longitudlMiPosicion = df.format(activity.getLocation().getLongitude());
+            ArrayList<Paradero> coordenadasPuntoRecarga = new ArrayList();
+            for (Paradero paraderos : coordenadasParaderos) {
+                df = new DecimalFormat("#.00");
+                String latitudRecarga = df.format(paraderos.getLatitud());
+                String longitudRecarga = df.format(paraderos.getLongitud());
+                if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
+                    coordenadasPuntoRecarga.add(paraderos);
+                    for (Paradero p:coordenadasPuntoRecarga) {
+                      ejecutarHilo(p);
+                    }
+
+                }
+
+            }
+            return null;
+        }
+        private void ejecutarHilo(Paradero p){
+            TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(p);
+            tarea.execute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            super.onPostExecute(aVoid);
+        }
+    }
+
     private class TareaAsincronaMejorRuta extends AsyncTask<Void, Void, Void> {
         private Paradero coordenadas;
         private  ArrayList<RutaCorta> rutas;
-        final ProgressDialog progreso = new ProgressDialog(context);
         private RutaCorta rutaCortaRecarga;;
 
         TareaAsincronaMejorRuta(Paradero paraderos) {
