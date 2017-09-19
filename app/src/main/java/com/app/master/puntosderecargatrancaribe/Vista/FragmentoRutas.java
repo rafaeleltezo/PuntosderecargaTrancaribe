@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -121,8 +122,8 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         vista = inflater.inflate(R.layout.fragment_rutas, container, false);
-
         interstitialAd = new InterstitialAd(getContext(), "133411673871431_176478619564736");
         interstitialAd.setAdListener(new InterstitialAdListener() {
             @Override
@@ -137,7 +138,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
 
             @Override
             public void onError(Ad ad, AdError adError) {
-                Toast.makeText(getContext(), "Error del baner", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -178,6 +179,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
         ArrayAdapter<String> sa = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, busqueda);
         autoCompletador.setThreshold(1);
         autoCompletador.setAdapter(sa);
+
 
         //buscadorParaderoDestino();
 
@@ -298,19 +300,28 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
                 rutaVenidaeIda(paraderoOrigen, paraderoDestino);
 
 
-            } else {
-                rutaBusParaderos = new ArrayList();
-                int destinoParadero = (int) paraderoOrigen.getPosicion() + 1;
-                ParaderoBuscador destinosegundario = obtenerPosicionParaderoPrincipal(destinoParadero);
-                //Toast.makeText(getContext(), destinosegundario.getNombre(), Toast.LENGTH_SHORT).show();
-                rutaVenidaeIda(paraderoOrigen, destinosegundario);
-                //Toast.makeText(getContext(),"el origen es: "+destinosegundario.getNombre()+" el destino es: "+paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
-                rutaVenidaeIda(destinosegundario, paraderoDestino);
+            } else if(origenPosicion != destinoPosicion) {
 
-                int destino = (int) paraderoDestino.getPosicion() + 1;
-                ParaderoBuscador destinosegundarios = obtenerPosicionParaderoPrincipal(destino);
-                rutaVenidaeIda(paraderoOrigen, destinosegundarios);
-                rutaVenidaeIda(destinosegundarios, paraderoDestino);
+                    rutaBusParaderos = new ArrayList();
+                    int destinoParadero = (int) paraderoOrigen.getPosicion() + 1;
+                    ParaderoBuscador destinosegundario = obtenerPosicionParaderoPrincipal(destinoParadero);
+                    //Toast.makeText(getContext(), "el destino segundario es: " + destinosegundario.getNombre(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), destinosegundario.getNombre(), Toast.LENGTH_SHORT).show();
+
+
+
+
+
+                        rutaVenidaeIda(paraderoOrigen, destinosegundario);
+                    //Toast.makeText(getContext(),"el origen es: "+destinosegundario.getNombre()+" el destino es: "+paraderoDestino.getNombre(), Toast.LENGTH_LONG).show();
+                    rutaVenidaeIda(destinosegundario, paraderoDestino);
+
+                    int destino = (int) paraderoDestino.getPosicion() + 1;
+                    ParaderoBuscador destinosegundarios = obtenerPosicionParaderoPrincipal(destino);
+                    rutaVenidaeIda(paraderoOrigen, destinosegundarios);
+                    rutaVenidaeIda(destinosegundarios, paraderoDestino);
+
+
 
 
             }
@@ -323,6 +334,7 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
             rutaVenidaeIda(paraderoOrigen, destinosegundario);
             //Toast.makeText(getContext(),"el origen es: "+destinosegundario.getNombre()+" el destino es: "+paraderoDestino.getNombre(), Toast.LENGTH_SHORT).show();
             rutaVenidaeIda(destinosegundario, paraderoDestino);
+
 
 
             //rutaVenidaeIda(paraderoOrigen,paraderoDestino);
@@ -423,8 +435,8 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
                 rutaCercana(origen, destino);
 
             }
-        } catch (Exception e) {
-
+        } catch (NullPointerException e) {
+            getActivity().finish();
         }
     }
 
@@ -852,27 +864,32 @@ public class FragmentoRutas extends Fragment implements View.OnClickListener/*,
     @Override
     public void onClick(View v) {
         if (verificarInternet()) {
+            try {
 
-            if (buscadorParaderoDestino(autoCompletador.getText().toString())) {
-                interstitialAd.loadAd();
-                determinarRuta();
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(), obtenerrutas()));
-                InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(botonIr.getWindowToken(), 0);
-                mMap.clear();
-                ArrayList<ParaderoBuscador> paraderoB = new ArrayList();
-                paraderoB.add(paraderoOrigen);
-                for (RutaBusParadero s : obtenerrutas()) {
-                    paraderoB.add(s.getParaderoBuscador());
+                if (buscadorParaderoDestino(autoCompletador.getText().toString())) {
+                    interstitialAd.loadAd();
+                    determinarRuta();
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    recyclerView.setAdapter(new AdaptadorReciclerViewRuta(getContext(), obtenerrutas()));
+                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(botonIr.getWindowToken(), 0);
+                    mMap.clear();
+                    ArrayList<ParaderoBuscador> paraderoB = new ArrayList();
+                    paraderoB.add(paraderoOrigen);
+                    for (RutaBusParadero s : obtenerrutas()) {
+                        paraderoB.add(s.getParaderoBuscador());
+                    }
+                    paraderoB.add(paraderoDestino);
+                    mostrarRutaEnMapa(paraderoB);
+                } else {
+                    Toast.makeText(getContext(), "No hay paraderos cercanos", Toast.LENGTH_SHORT).show();
                 }
-                paraderoB.add(paraderoDestino);
-                mostrarRutaEnMapa(paraderoB);
-            } else {
-                Toast.makeText(getContext(), "No hay paraderos cercanos", Toast.LENGTH_SHORT).show();
-            }
+            }catch (Exception e){
+                getActivity().finish();
 
-        } else {
+            }
+        }
+    else {
             Toast.makeText(getContext(), "No hay conexion a internet", Toast.LENGTH_SHORT).show();
         }
     }

@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -94,7 +95,9 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
             presentador = new PresentadorMainActivity(getActivity(), this);
             gps = new GpsUtil(getContext(), getActivity());
             apiClient = gps.Inicializaapi(getActivity());
-            actuliazarUbicacion();
+            tarea t=new tarea();
+            t.execute();
+            //actuliazarUbicacion();
             enableLocationUpdates();
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -523,5 +526,15 @@ public class FragmentMapaPuntoRecarga extends Fragment implements iMapsActivity,
     @Override
     public void onMapClick(LatLng latLng) {
         boton.setVisibility(View.INVISIBLE);
+    }
+
+    private class tarea extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            actuliazarUbicacion();
+            enableLocationUpdates();
+            return null;
+        }
     }
 }

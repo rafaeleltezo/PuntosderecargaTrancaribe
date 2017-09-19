@@ -221,9 +221,12 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                 String longitudRecarga = df.format(paraderos.getLongitud());
                 if (latitulMiPosicion.equals(latitudRecarga) && longitudlMiPosicion.equals(longitudRecarga)) {
                     coordenadasPuntoRecarga.add(paraderos);
+                    for (Paradero p:coordenadasPuntoRecarga) {
+                        TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(p);
+                        tarea.execute();
 
-                    TareaAsincronaMejorRuta tarea = new TareaAsincronaMejorRuta(coordenadasPuntoRecarga);
-                    tarea.execute();
+                    }
+
                 }
 
             }
@@ -315,20 +318,20 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                     }
                 });
             } else {
-                Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Verifique su conexion a internet", Toast.LENGTH_SHORT).show();
             }
             return null;
         }
     }
 
     private class TareaAsincronaMejorRuta extends AsyncTask<Void, Void, Void> {
-        private ArrayList<Paradero> coordenadas;
+        private Paradero coordenadas;
         private  ArrayList<RutaCorta> rutas;
         final ProgressDialog progreso = new ProgressDialog(context);
         private RutaCorta rutaCortaRecarga;;
 
-        TareaAsincronaMejorRuta(ArrayList<Paradero> coordenadasParaderos) {
-            this.coordenadas = coordenadasParaderos;
+        TareaAsincronaMejorRuta(Paradero paraderos) {
+            this.coordenadas = paraderos;
         }
 
         public ArrayList<RutaCorta> getRutas() {
@@ -344,29 +347,26 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                for (final Paradero paradero : coordenadas) {
+
 
                     final AdaptadorEnpointGoogle conexion = new AdaptadorEnpointGoogle();
                     Gson gson = conexion.costruyeJsonDeserializadorDistanciaCorta();
                     Endpoin endpoin = conexion.establecerConexionGoogleMaps(gson);
                     rutas = new ArrayList();
                     Call<RespuestaRutaCorta> respuesta = endpoin.getubicacionCorta(String.valueOf(activity.getLocation().getLatitude()) + "," + String.valueOf(activity.getLocation().getLongitude()),
-                            String.valueOf(paradero.getLatitud()) + "," + String.valueOf(paradero.getLongitud()), token, "walking");
+                            String.valueOf(coordenadas.getLatitud()) + "," + String.valueOf(coordenadas.getLongitud()), token, "walking");
                     respuesta.enqueue(new Callback<RespuestaRutaCorta>() {
                         @Override
                         public void onResponse(Call<RespuestaRutaCorta> call, Response<RespuestaRutaCorta> response) {
                             RespuestaRutaCorta respuesta = response.body();
                             RutaCorta ruta = new RutaCorta();
                             ruta.setDistacia(respuesta.getDistancia());
-                            ruta.setParadero(paradero);
-                            rutas.add(ruta);
-                            double distacia = rutas.get(0).getDistacia();
-                            if (ruta.getDistacia() < distacia) {
-                                distacia = ruta.getDistacia();
-                                rutaCortaRecarga = ruta;
-                                obtenerRutaMapa(rutaCortaRecarga.getParadero());
+                            ruta.setParadero(coordenadas);
+                            //rutas.add(ruta);
+                              //  rutaCortaRecarga = ruta;
+                                obtenerRutaMapa(ruta.getParadero());
 
-                            }
+
                         }
 
                         @Override
@@ -377,7 +377,7 @@ public class PresentadorMainActivity implements iPresentadorMainActivity {
                     });
 
 
-                }
+
             }catch (Exception e) {
                 progreso.dismiss();
             //Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
